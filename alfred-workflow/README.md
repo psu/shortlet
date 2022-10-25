@@ -1,6 +1,6 @@
-# Shortlet
+# Shortlet - Alfred workflow
 
-[⤓ Download Workflow](https://github.com/psu/shortlet/raw/v3/Shortlet.alfredworkflow)
+[⤓ Download Workflow]()
 
 ## About
 
