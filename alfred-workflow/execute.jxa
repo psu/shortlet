@@ -1,0 +1,12 @@
+#!/usr/bin/osascript -l JavaScript
+
+function run(argv) {
+  const code = `
+    if (typeof Shortlet !== 'function') {
+      ${argv[0]}
+      var s = new Shortlet()
+    }
+    s.run( ${argv[2]} )
+  `
+  return Application(argv[1]).windows[0].activeTab.execute({ javascript: code })
+}

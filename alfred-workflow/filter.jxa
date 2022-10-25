@@ -1,0 +1,37 @@
+#!/usr/bin/osascript -l JavaScript
+
+const browser_list = [
+  'com.google.Chrome',
+//  'com.apple.Safari'
+]
+
+function run(argv) {
+  if (browser_list.includes(argv[1]) === false) {
+    return JSON.stringify({ items: [{ title: `Chrome is not active` }] })
+  }
+  const tab_url = Application(argv[1]).windows[0].activeTab.url()
+  const shortlet_list = JSON.parse(argv[0])
+  const domain = tab_url.replace(/(https?:\/\/)?(www.)?/i, '').split('/')[0]
+  let filter_items = shortlet_list
+    .filter(s => RegExp(s.domain, 'i').test(domain))
+    .map(s => {
+      return {
+        title: s.title,
+        uid: s.id,
+        //subtitle: `Run ${s.actions.length} actions on ${domain}`,
+        arg: JSON.stringify(s.actions),
+      }
+    })
+
+  if (typeof argv[2] !== 'undefined') {
+    const hotkey_item = filter_items.filter(i => i.uid === argv[2])
+    if (hotkey_item.length === 1) {
+      return hotkey_item[0].arg
+    }
+    return JSON.stringify({ items: [{ title: `Couldn't find Shortlet for Hotkey` }] })
+  }
+  if (filter_items.length > 0) {
+    return JSON.stringify({ items: filter_items })
+  }
+  return JSON.stringify({ items: [{ title: `Shortlets not found for '${domain}'` }] })
+}
