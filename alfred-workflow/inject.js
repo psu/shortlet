@@ -48,7 +48,10 @@ class Shortlet extends Queue {
 
   actions = {
     goto: url => {
-      document.location = url
+      window.location = url
+    },
+    goto_append: url => {
+      window.location += url
     },
     click: selector => {
       document.querySelector(selector).click()
@@ -78,7 +81,7 @@ class Shortlet extends Queue {
     input_value: (selector, text) => {
       document.querySelector(selector).value = text
     },
-    input_enter: selector => {
+    dispatch_enter: selector => {
       document.querySelector(selector).dispatchEvent(
         new KeyboardEvent('keydown', {
           code: 'Enter',
@@ -90,7 +93,7 @@ class Shortlet extends Queue {
         })
       )
     },
-    input_space: selector => {
+    dispatch_space: selector => {
       document.querySelector(selector).focus()
       document.querySelector(selector).dispatchEvent(
         new KeyboardEvent('keydown', {

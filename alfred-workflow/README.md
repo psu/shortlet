@@ -20,6 +20,7 @@ v3
 - Add readme.
 - Add license.
 - Add workflow icon.
+- Replace domain with uri
 
 v2
 
@@ -38,3 +39,4 @@ v1
 ## Roadmap
 
 - Detect frontmost browser instead of using a pre-set var.
+- Use website favicon
