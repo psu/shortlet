@@ -1,126 +1,255 @@
-class Queue {
-  constructor(pace = 300, queue = []) {
-    this.pace = pace
-    this.queue = queue
-    this.timer = null
-  }
-
-  next(item) {
-    // do one item and continue with next
-    this.timer = setTimeout(() => {
-      this.timer = null
-      item.fn()
-      if (this.queue.length) {
-        this.next(this.queue.shift())
-      }
-    }, item.delay)
-  }
-
-  add(fn, delay) {
-    // add to internal queue
-    delay = typeof delay !== 'undefined' ? delay : this.pace
-    this.queue.push({ fn: fn, delay: delay })
-  }
-
-  start() {
-    // run queue from start to end
-    if (this.queue.length) {
-      this.next(this.queue.shift())
+class ShortletQueue {
+  constructor(queue = undefined, delay = undefined) {
+    this.delay = 300
+    this.queue = []
+    if (typeof delay === 'number') this.delay = delay
+    if (typeof queue === 'object') {
+      queue.forEach(i => {
+        if (typeof i.fn === 'function') this.queue.push(i)
+      })
     }
   }
-
-  stop() {
-    // stop timer and keep the rest of the queue
-    clearTimeout(this.timer)
+  add(f, d = this.delay) {
+    this.queue.push({ fn: f, delay: d })
   }
-
-  reset() {
-    // reset timer and queue
-    this.stop()
-    this.queue = []
+  step(item) {
+    // run the items function and make a reqursive call to the next
+    if (typeof item.delay === 'undefined') item.delay = this.delay
+    this.timer = setTimeout(() => {
+      delete this.timer
+      item.fn()
+      if (this.queue.length > 0) this.step(this.queue.shift())
+    }, item.delay)
+  }
+  start() {
+    if (typeof this.timer === 'undefined' && this.queue.length > 0) this.step(this.queue.shift())
+  }
+  pause() {
+    // stop timer and keep the rest of the queue
+    delete this.timer
   }
 }
 
-class Shortlet extends Queue {
-  constructor(...args) {
-    super(...args)
+var ShortletRunner = (() => {
+  const delay = 0
+  const run = (shortlet = undefined) => {
+    if (typeof shortlet === 'undefined') return
+    // make sure we have an array
+    if (!Array.isArray(shortlet.actions)) shortlet.actions = [shortlet.actions]
+    if (typeof shortlet.repeat !== 'number' || shortlet.repeat < 0) shortlet.repeat = 1
+
+    const queue = new ShortletQueue()
+    // add all actions in the array to the queue as functions wrapped in try…catch
+
+    for (let i = 0; i < shortlet.repeat; i++) {
+      shortlet.actions.forEach(a => {
+        if (typeof ShortletActions[a.do] !== 'function') throw `${a.do} is not a function`
+        const item = () => {
+          try {
+            ShortletActions[a.do](a)
+            logSuccess(a)
+          } catch (err) {
+            if (typeof a.fallback === 'object') {
+              try {
+                ShortletActions[a.do](a.fallback)
+                logSuccess({ do: `${a.do} (fallback)`, ...a.fallback })
+              } catch (err) {
+                logError(err, `${a.do} (fallback)`, a.fallback)
+              }
+            } else {
+              logError(err, a.do, a)
+            }
+          }
+        }
+        queue.add(item, a.delay)
+      })
+    }
+
+    // start executing the queue
+    queue.start()
   }
 
-  actions = {
-    goto: url => {
-      window.location = url
+  const load = (shortlets = undefined) => {
+    return shortlets.shortlets.filter(s => window.location.href.indexOf(s.url) != -1)
+  }
+
+  const logSuccess = (action = '') => {
+    //if (!shortlet_logging) return
+    let text = `🦾${action.do}`
+    if (typeof action === 'object') {
+      text = `🦾${action.do}   (`
+      delete action.do
+      text += Object.entries(action)
+        .map(o => `${o[0]}: ${JSON.stringify(o[1])}`)
+        .join(', ')
+      text += ')'
+    }
+    console.log(`ShortletRunner: ${text}`)
+  }
+
+  const logError = (err = '', action = '', o = {}) => {
+    //if (!shortlet_logging) return
+    console.log(`ShortletRunner: Error for action '${action}'\n${JSON.stringify(o)}\n${err}`)
+  }
+  return { run: run, load: load }
+})()
+
+var ShortletActions = (() => {
+  const selectOne = s => {
+    return document.querySelector(s)
+  }
+  const selectAll = s => {
+    return Object.entries(document.querySelectorAll(s)).map(o => o[1])
+  }
+  const matchInnerText = (el, t) => {
+    return el.innerText.toLowerCase().trim().match(t) !== null
+  }
+  const isFrontmost = el => {
+    const el_rect = el.getBoundingClientRect()
+    return document
+      .elementFromPoint(el_rect.left + el_rect.width / 2, el_rect.top + el_rect.height / 2)
+      .isSameNode(el)
+  }
+  const clickIt = el_list => {
+    if (!Array.isArray(el_list)) el_list = [el_list]
+    if (el_list.length > 0) el_list.forEach(el => el.click())
+    else throw new Error('No elements found')
+  }
+  const blur = o => {
+    if (selectOne(':focus') !== null) selectOne(':focus').blur()
+  }
+  // const setValue = (el, text) => {
+  //   Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(el, text)
+  //   el.dispatchEvent(new Event('input', { bubbles: true }))
+  // }
+  const setInput = (el, attr, value, event = undefined) => {
+    if (typeof event !== 'string') event = 'input'
+    callSetProperty(el, attr, value)
+    dispatchEvent(el, event)
+  }
+  const dispatchEvent = (el, event, options = undefined) => {
+    if (typeof options !== 'object') options = { bubbles: true }
+    el.dispatchEvent(new Event(event, options))
+  }
+  const dispatchKeyboardEvent = (el, key = undefined, event = undefined, options = undefined) => {
+    if (typeof event !== 'string') event = 'keydown'
+    if (typeof options !== 'object') options = { bubbles: true }
+    options.key = key
+    el.dispatchEvent(new KeyboardEvent(event, options))
+  }
+
+  const callSetProperty = (el, attr, value) => {
+    Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, attr).set.call(el, value)
+  }
+  //
+  return {
+    goto: o => {
+      if (o.append === true) window.location += o.url
+      else window.location = o.url
     },
-    goto_append: url => {
-      window.location += url
+    back: o => {
+      history.back()
     },
-    click: selector => {
-      document.querySelector(selector).click()
+    forward: o => {
+      history.forward()
     },
-    click_all: selector => {
-      document.querySelectorAll(selector).forEach(o => {
-        o.click()
+    click: o => {
+      if (typeof o.text === 'string') {
+        clickIt(
+          selectAll(o.on)
+            .filter(el => matchInnerText(el, o.text))
+            .filter(el => isFrontmost(el))
+            .slice(0, 1)
+        )
+      } else {
+        clickIt(selectOne(o.on))
+      }
+    },
+    click_all: o => {
+      if (typeof o.text === 'string')
+        clickIt(selectAll(o.on).filter(el => matchInnerText(el, o.text)))
+      else clickIt(selectAll(o.on))
+    },
+    blur: blur,
+    focus: o => {
+      blur()
+      selectOne(o.on).focus()
+    },
+    select: o => {
+      selectOne(o.on).select()
+    },
+    add_class: o => {
+      selectAll(o.on).forEach(el => el.classList.add(...o.class.split(' ')))
+    },
+    remove_class: o => {
+      selectAll(o.on).forEach(el => el.classList.remove(...o.class.split(' ')))
+    },
+    toggle_class: o => {
+      selectAll(o.on).forEach(el => el.classList.toggle(...o.class.split(' ')))
+    },
+    show: o => {
+      if (typeof o.type !== 'string') o.type = 'block'
+      selectAll(o.on).forEach(el => (el.style.display = o.type))
+    },
+    hide: o => {
+      selectAll(o.on).forEach(el => (el.style.display = 'none'))
+    },
+    toggle: o => {
+      if (typeof o.type !== 'string') o.type = 'block'
+      selectAll(o.on).forEach(el => {
+        if (el.style.display === 'none') el.style.display = o.type
+        else el.style.display = 'none'
       })
     },
-    click_text: (selector, text) => {
-      document.querySelectorAll(selector).forEach(o => {
-        if (o.firstChild.text == text) {
-          o.click()
+    input: o => {
+      setInput(selectOne(o.on), 'input', o.text, 'input')
+    },
+    html_attribute: o => {
+      selectAll(o.on).forEach(el => setInput(el, o.attribute, o.value, 'mouseup'))
+    },
+    check: o => {
+      selectAll(o.on).forEach(el => triggerEvent(el, 'click'))
+    },
+    reveal_data: o => {
+      // get the contents of the property 'data-XXX' (set data to "XXX")
+      // for all elements matching 'on'
+      // and append it as a span to the child element 'target' (could be set to "*")
+      // with the inline style 'style'
+      o.style = typeof o.style !== 'undefined' ? o.style : 'padding:2px 5px'
+      selectAll(o.on).forEach(el => {
+        const out_el = document.createElement('span')
+        const target = o.target !== 'undefined' ? el.querySelector(o.target) : el
+        out_el.textContent = el.dataset[o.data]
+        out_el.setAttribute('style', o.style)
+        target.append(out_el)
+      })
+    },
+    copy_paste_label: o => {
+      // get value(s) from selector with regex
+      // find target or matching input field and paste
+      // using react change event
+      o.join = typeof o.join !== 'undefined' ? o.join : ' '
+      selectAll(o.on).forEach(el => {
+        const groups = el.innerText.match(new RegExp(o.text))
+        if (groups) {
+          groups.shift()
+          const output = groups.join(o.join)
+          const target = selectOne('' + el.getAttribute('for'))
+          Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(
+            target,
+            output
+          )
+          target.dispatchEvent(new Event('input', { bubbles: true }))
         }
       })
     },
-    input: text => {
-      console.log('input:', text)
+    highlight: o => {},
+    keyboard: o => {
+      const el = typeof o.on === 'string' ? selectOne(o.on) : window
+      dispatchKeyboardEvent(el, o.key, o.event, o.options)
     },
-    blur: () => {
-      if (document.querySelector(':focus') !== null) {
-        document.querySelector(':focus').blur()
-      }
-    },
-    input_focus: selector => {
-      if (document.querySelector(':focus') !== null) {
-        document.querySelector(':focus').blur()
-      }
-      document.querySelector(selector).focus()
-    },
-    input_select: selector => {
-      document.querySelector(selector).select()
-    },
-    input_value: (selector, text) => {
-      document.querySelector(selector).value = text
-    },
-    class_add: (selector, class_list) => {
-      document.querySelectorAll(selector).forEach(o => {
-        o.classList.add(...class_list.split(' '))
-      })
-    },
-    class_remove: (selector, class_list) => {
-      document.querySelectorAll(selector).forEach(o => {
-        o.classList.remove(...class_list.split(' '))
-      })
-    },
-    class_toggle: (selector, class_list) => {
-      document.querySelectorAll(selector).forEach(o => {
-        o.classList.toggle(...class_list.split(' '))
-      })
-    },
-    show: (selector, type = 'block') => {
-      document.querySelectorAll(selector).forEach(o => {
-        o.style.display = type
-      })
-    },
-    hide: selector => {
-      document.querySelectorAll(selector).forEach(o => {
-        o.style.display = 'none'
-      })
-    },
-    toggle: (selector, type = 'block') => {
-      document.querySelectorAll(selector).forEach(o => {
-        if (o.style.display === 'none') o.style.display = type
-        else o.style.display = 'none'
-      })
-    },
-    dispatch_enter: selector => {
-      document.querySelector(selector).dispatchEvent(
+    dispatch_enter: o => {
+      document.querySelector(o.on).dispatchEvent(
         new KeyboardEvent('keydown', {
           code: 'Enter',
           key: 'Enter',
@@ -131,9 +260,9 @@ class Shortlet extends Queue {
         })
       )
     },
-    dispatch_space: selector => {
-      document.querySelector(selector).focus()
-      document.querySelector(selector).dispatchEvent(
+    dispatch_space: o => {
+      document.querySelector(o.on).focus()
+      document.querySelector(o.on).dispatchEvent(
         new KeyboardEvent('keydown', {
           which: 32,
           charCode: 32,
@@ -143,58 +272,8 @@ class Shortlet extends Queue {
         })
       )
     },
-    // get the contents of the property 'data-XXX' (set data to "XXX")
-    // for all elements matching 'selector'
-    // and append it as a span to the child element 'target' (could be set to "*")
-    // with the inline style 'style'
-    reveal_data: (data, selector, target, style) => {
-      document.querySelectorAll(selector).forEach(el => {
-        const output = document.createElement('span')
-        output.textContent = el.dataset[data]
-        output.setAttribute('style', style)
-        el.querySelector(target).appendChild(output)
-      })
-    },
   }
+})()
 
-  run(actions = []) {
-    if (!Array.isArray(actions)) {
-      actions = [actions]
-    }
-    this.addActions(actions)
-    this.start()
-  }
-
-  addActions(actions) {
-    actions.forEach(a => {
-      this.addSingleAction(a)
-    })
-  }
-
-  addSingleAction(action) {
-    let fn = () => {}
-    if (typeof this.actions[action.do] === 'function') {
-      fn = () => {
-        try {
-          this.actions[action.do](...action.with)
-        } catch (e) {
-          if (typeof action.fallback !== 'undefined') {
-            try {
-              this.actions[action.do](...action.fallback)
-            } catch (e) {
-              this.logError(e, `${action.do} (fallback)`, action.fallback)
-            }
-          } else {
-            this.logError(e, action.do, action.with)
-          }
-        }
-      }
-    }
-    this.add(fn, action.delay)
-  }
-
-  logError(e = '', action = '', args = []) {
-    let with_args = args.length !== 0 ? ` with '${args.join(', ')}'` : ''
-    console.log(`Shortlet:  Error doing '${action}'${with_args}\n${e}`)
-  }
-}
+//ShortletRunner.run({ actions: [{ do: 'click_all', on: '.css-af3ja4' }] })
+// udpated 2024-02-18

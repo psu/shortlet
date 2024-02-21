@@ -2,14 +2,14 @@
 
 function run(argv) {
   const code = argv[0]
-  const browser = argv[1]
-  const shortlet = argv[2]
+  const shortlets = argv[1]
+  const browser = argv[2]
 
   const injectee = `
     if (typeof ShortletRunner !== 'object') {
       ${code}
-    } else { console.log('Runner (execute): Already loaded') }
-    ShortletRunner.run(${shortlet})
+      var ShortletList = ShortletRunner.load(${shortlets})
+    } else { console.log('Runner (load): Already loaded') }
   `
   return Application( browser ).windows[0].activeTab.execute( {javascript: injectee} )
 }
