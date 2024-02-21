@@ -61,6 +61,13 @@ class Shortlet extends Queue {
         o.click()
       })
     },
+    click_text: (selector, text) => {
+      document.querySelectorAll(selector).forEach(o => {
+        if (o.firstChild.text == text) {
+          o.click()
+        }
+      })
+    },
     input: text => {
       console.log('input:', text)
     },
@@ -80,6 +87,37 @@ class Shortlet extends Queue {
     },
     input_value: (selector, text) => {
       document.querySelector(selector).value = text
+    },
+    class_add: (selector, class_list) => {
+      document.querySelectorAll(selector).forEach(o => {
+        o.classList.add(...class_list.split(' '))
+      })
+    },
+    class_remove: (selector, class_list) => {
+      document.querySelectorAll(selector).forEach(o => {
+        o.classList.remove(...class_list.split(' '))
+      })
+    },
+    class_toggle: (selector, class_list) => {
+      document.querySelectorAll(selector).forEach(o => {
+        o.classList.toggle(...class_list.split(' '))
+      })
+    },
+    show: (selector, type = 'block') => {
+      document.querySelectorAll(selector).forEach(o => {
+        o.style.display = type
+      })
+    },
+    hide: selector => {
+      document.querySelectorAll(selector).forEach(o => {
+        o.style.display = 'none'
+      })
+    },
+    toggle: (selector, type = 'block') => {
+      document.querySelectorAll(selector).forEach(o => {
+        if (o.style.display === 'none') o.style.display = type
+        else o.style.display = 'none'
+      })
     },
     dispatch_enter: selector => {
       document.querySelector(selector).dispatchEvent(
@@ -104,6 +142,18 @@ class Shortlet extends Queue {
           bubbles: true,
         })
       )
+    },
+    // get the contents of the property 'data-XXX' (set data to "XXX")
+    // for all elements matching 'selector'
+    // and append it as a span to the child element 'target' (could be set to "*")
+    // with the inline style 'style'
+    reveal_data: (data, selector, target, style) => {
+      document.querySelectorAll(selector).forEach(el => {
+        const output = document.createElement('span')
+        output.textContent = el.dataset[data]
+        output.setAttribute('style', style)
+        el.querySelector(target).appendChild(output)
+      })
     },
   }
 
@@ -144,7 +194,7 @@ class Shortlet extends Queue {
   }
 
   logError(e = '', action = '', args = []) {
-    args = args.length !== 0 ? args.join(', ') : 'n/a'
-    console.log(`Shortlet:  Error doing '${action}' with '${args}'\n${e}`)
+    let with_args = args.length !== 0 ? ` with '${args.join(', ')}'` : ''
+    console.log(`Shortlet:  Error doing '${action}'${with_args}\n${e}`)
   }
 }
