@@ -2,4 +2,4 @@
 
 ![Shortlet icon](./icon.png)
 
-[⤓ Download Workflow](./Shortlet.alfredworkflow)
+[⤓ Download Workflow](./raw/master/Shortlet.alfredworkflow)
