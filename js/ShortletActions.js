@@ -1,99 +1,3 @@
-class ShortletQueue {
-  constructor(queue = undefined, delay = undefined) {
-    this.delay = 300
-    this.queue = []
-    if (typeof delay === 'number') this.delay = delay
-    if (typeof queue === 'object') {
-      queue.forEach(i => {
-        if (typeof i.fn === 'function') this.queue.push(i)
-      })
-    }
-  }
-  add(f, d = this.delay) {
-    this.queue.push({ fn: f, delay: d })
-  }
-  step(item) {
-    // run the items function and make a reqursive call to the next
-    if (typeof item.delay === 'undefined') item.delay = this.delay
-    this.timer = setTimeout(() => {
-      delete this.timer
-      item.fn()
-      if (this.queue.length > 0) this.step(this.queue.shift())
-    }, item.delay)
-  }
-  start() {
-    if (typeof this.timer === 'undefined' && this.queue.length > 0) this.step(this.queue.shift())
-  }
-  pause() {
-    // stop timer and keep the rest of the queue
-    delete this.timer
-  }
-}
-
-var ShortletRunner = (() => {
-  const delay = 0
-  const run = (shortlet = undefined) => {
-    if (typeof shortlet === 'undefined') return
-    // make sure we have an array
-    if (!Array.isArray(shortlet.actions)) shortlet.actions = [shortlet.actions]
-    if (typeof shortlet.repeat !== 'number' || shortlet.repeat < 0) shortlet.repeat = 1
-
-    const queue = new ShortletQueue()
-    // add all actions in the array to the queue as functions wrapped in try…catch
-
-    for (let i = 0; i < shortlet.repeat; i++) {
-      shortlet.actions.forEach(a => {
-        if (typeof ShortletActions[a.do] !== 'function') throw `${a.do} is not a function`
-        const item = () => {
-          try {
-            ShortletActions[a.do](a)
-            logSuccess(a)
-          } catch (err) {
-            if (typeof a.fallback === 'object') {
-              try {
-                ShortletActions[a.do](a.fallback)
-                logSuccess({ do: `${a.do} (fallback)`, ...a.fallback })
-              } catch (err) {
-                logError(err, `${a.do} (fallback)`, a.fallback)
-              }
-            } else {
-              logError(err, a.do, a)
-            }
-          }
-        }
-        queue.add(item, a.delay)
-      })
-    }
-
-    // start executing the queue
-    queue.start()
-  }
-
-  const load = (shortlets = undefined) => {
-    return shortlets.shortlets.filter(s => window.location.href.indexOf(s.url) != -1)
-  }
-
-  const logSuccess = (action = '') => {
-    //if (!shortlet_logging) return
-    let text = `🦾${action.do}`
-    if (typeof action === 'object') {
-      text = `🦾${action.do}   (`
-      delete action.do
-      text += Object.entries(action)
-        .map(o => `${o[0]}: ${JSON.stringify(o[1])}`)
-        .join(', ')
-      text += ')'
-    }
-    console.log(`ShortletRunner: ${text}`)
-  }
-
-  const logError = (err = '', action = '', o = {}) => {
-    //if (!shortlet_logging) return
-    console.log(`ShortletRunner: Error for action '${action}'\n${JSON.stringify(o)}\n${err}`)
-  }
-  return { run: run, load: load }
-})()
-
 var ShortletActions = (() => {
   const selectOne = s => {
     return document.querySelector(s)
@@ -248,10 +152,6 @@ var ShortletActions = (() => {
       const el = typeof o.on === 'string' ? selectOne(o.on) : window
       dispatchKeyboardEvent(el, o.key, o.event, o.options)
     },
-    event: o => {
-      const el = typeof o.on === 'string' ? selectOne(o.on) : window
-      dispatchEvent(el, o.event, o.options)
-    },
     dispatch_enter: o => {
       document.querySelector(o.on).dispatchEvent(
         new KeyboardEvent('keydown', {
@@ -278,6 +178,3 @@ var ShortletActions = (() => {
     },
   }
 })()
-
-//ShortletRunner.run({ actions: [{ do: 'click_all', on: '.css-af3ja4' }] })
-// udpated 2024-02-18
