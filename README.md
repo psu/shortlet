@@ -1,3 +1,5 @@
 # Shortlet
 
-![Shortlet icon](/alfred-workflow/icon.png)
+![Shortlet icon](./icon.png)
+
+[⤓ Download Workflow](./Shortlet.alfredworkflow)
