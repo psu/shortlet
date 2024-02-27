@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "version": "0.1",
+  "name": "Shortlet",
+  "action": {
+    "default_icon": {
+      "256": "./img/icon.png"
+    },
+    "default_title": "Shortlet"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Alt+Space",
+        "windows": "Alt+Space",
+        "chromeos": "Alt+Space",
+        "linux": "Alt+Space"
+      }
+    },
+    "custom-command": {
+      "description": "Execute the custom command"
+    }
+  },
+  "background": {
+    "service_worker": "./js/background.js"
+  },
+  "permissions": [
+    "scripting",
+    "activeTab",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://*/*",
+    "http://*/*"
+  ]
+}

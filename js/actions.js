@@ -1,4 +1,4 @@
-var ShortletActions = (() => {
+const actions = (function () {
   const selectOne = s => {
     return document.querySelector(s)
   }

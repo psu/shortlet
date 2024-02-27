@@ -1,6 +1,6 @@
-class ShortletQueue {
+class Queue {
   constructor(queue = undefined, delay = undefined) {
-    this.delay = 300
+    this.delay = 0
     this.queue = []
     if (typeof delay === 'number') this.delay = delay
     if (typeof queue === 'object') {
