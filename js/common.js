@@ -1,3 +1,4 @@
+let all_shortlets
 const saveAction = action => {
   console.log('Save action:', action)
 }

@@ -24,13 +24,16 @@
   "background": {
     "service_worker": "./js/background.js"
   },
+  "options_ui": {
+    "page": "html/options.html",
+    "open_in_tab": true
+  },
   "permissions": [
     "scripting",
     "activeTab",
     "storage"
   ],
   "host_permissions": [
-    "https://*/*",
-    "http://*/*"
+    "<all_urls>"
   ]
 }
