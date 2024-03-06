@@ -1,4 +1,5 @@
 ;(async () => {
+  const dev_mode = false
   function callServiceWorker(message) {
     return new Promise((resolve, reject) => {
       chrome.runtime.sendMessage(message, response => {
@@ -8,10 +9,12 @@
     })
   }
   function load(shortlet) {
-    return shortlet.commands.filter(s => window.location.href.indexOf(s.url) != -1)
+    return shortlet.commands.filter(s => window.location.href.includes(s.url))
   }
+  const shortlet_object = await callServiceWorker({ action: 'get_storage', key: 'shortlet_object' })
+  const loaded_commands = load(shortlet_object)
   function logSuccess(a = '') {
-    if (!logging) return
+    if (!dev_mode) return
     const action = { ...a }
     let text = `🦾${action.do}`
     if (typeof action === 'object') {
@@ -25,7 +28,7 @@
     console.log(`Shortlet: ${text}`)
   }
   function logError(err = '', action = '', o = {}) {
-    if (!logging) return
+    if (!dev_mode) return
     console.log(`Shortlet: Error for action '${action}'\n${JSON.stringify(o)}\n${err}`)
   }
   class Queue {
@@ -105,13 +108,8 @@
         },
       }))
     }
-    return { name: 'No Shortlets loaded…' }
+    return []
   }
-
-  const logging = true
-  const shortlet_object = await callServiceWorker({ action: 'get_storage', key: 'shortlet_object' })
-  const loaded_commands = load(shortlet_object)
-
   // actions
   const actions = (function () {
     const selectOne = s => {
@@ -267,6 +265,9 @@
         const el = typeof o.on === 'string' ? selectOne(o.on) : window
         dispatchKeyboardEvent(el, o.key, o.event, o.options)
       },
+      iife: o => {
+        window.location = `javascript:(function(){${o.script}})();`
+      },
       dispatch_enter: o => {
         document.querySelector(o.on).dispatchEvent(
           new KeyboardEvent('keydown', {
@@ -300,21 +301,44 @@
     commands: loaded_commands,
     reload: load,
     parse: parseForCommandPal,
+    dev_mode: dev_mode,
   }
 })()
   .then(result => {
     window.Shortlet = result
+    let dev_menu = []
+    if (Shortlet.dev_mode) {
+      window.commandPalIgnoreBlur = true
+      dev_menu = [
+        {
+          name: 'Dev…',
+          children: [
+            {
+              name: "Toggle 'Ignore Blur'",
+              handler: () => {
+                window.commandPalIgnoreBlur =
+                  typeof window.commandPalIgnoreBlur === 'undefined'
+                    ? false
+                    : !window.commandPalIgnoreBlur
+              },
+            },
+            { name: 'Another command' },
+          ],
+        },
+      ]
+    }
     new CommandPal({
-      commands: Shortlet.parse(Shortlet.commands),
+      commands: [...Shortlet.parse(Shortlet.commands), ...dev_menu],
       hotkey: 'alt+space',
       hotkeysGlobal: true,
       id: 'SCP',
       placeholder: ' ',
       hideButton: true,
-      debugOutput: false,
+      debugOutput: Shortlet.dev_mode,
+      displayShortcutSymbols: true,
+      shortcutOpenPalette: false,
+      emptyResultText: 'No shortlets loaded.',
     }).start()
-
-    window.commandPalIgnoreBlur = true
   })
   .catch(err => {
     console.log('Error: ', err)

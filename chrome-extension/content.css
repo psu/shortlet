@@ -1,45 +1,84 @@
 #SCP {
-  --containerPadding: 6px;
-  --searchTextSize: 32px;
-  --searchHorizontalPadding: 4px;
-  --searchVerticalPadding: 10px;
-  --itemHorizontalPadding: 10px;
-  --itemVerticalPadding: 2px;
-  --itemTextSize: 18px;
-  --shortcutTextSize: 12px;
-  --shortcutTextColor: #ffffff33;
-  --shortcutSelectedTextColor: #ffffff99;
-  --containerWidth: 600px;
-  --containerTop: 25vh;
-  --containerLeft: 42vw;
-  --containerBackground: #201920f0;
-  --containerBorderColor: #555;
+  /* theme */
+  --commandpal_theme_accent_color: 240, 170, 50;
+  --commandpal_theme_background_color: 32, 31, 32;
+  --commandpal_theme_gray_color: 142, 141, 140;
+  --commandpal_theme_text_color: 255, 255, 255;
+  --commandpal_theme_roundness: 8px;
+  --commandpal_theme_text_size: 32px;
+  --commandpal_theme_text_weight: 400;
+  --commandpal_theme_dim_page: 0;
+  --commandpal_theme_width: 666px;
+  --commandpal_theme_spacing: 6px;
+
+  /* all */
+  --palette_modal_mask: rgba(0, 0, 0, var(--commandpal_theme_dim_page));
+  --palette_font: system-ui, -apple-system, 'Helvetica Neue', Helvetica, BlinkMacSystemText,
+    'Segoe UI', Ubuntu, sans-serif;
+  --palette_border_radius: var(--commandpal_theme_roundness);
+  --palette_padding: var(--commandpal_theme_spacing);
+  --palette_width: var(--commandpal_theme_width);
+  --palette_top: 25vh;
+  --palette_left: 45vw;
+  --palette_background: rgba(var(--commandpal_theme_background_color), 0.67);
+  --palette_background_blur: 18px;
+  --palette_border_color: rgba(var(--commandpal_theme_gray_color), 0.4);
+  --palette_scrollbar_color: rgba(var(--commandpal_theme_background_color), 0.2);
+  --palette_scrollbar_width: calc(var(--commandpal_theme_spacing) * 0.5);
+
+  --search_text_size: var(--commandpal_theme_text_size);
+  --search_text_weight: calc(var(--commandpal_theme_text_weight) * 0.75);
+  --search_horizontal_padding: calc(var(--commandpal_theme_spacing) * 0.67);
+  --search_vertical_padding: 10px;
+  --search_text_selection: rgba(var(--commandpal_theme_accent_color), 0.75);
+
+  --item_text_size: calc(var(--commandpal_theme_text_size) * 0.6);
+  --item_text_weight: var(--commandpal_theme_text_weight);
+  --item_selected_background: rgba(var(--commandpal_theme_accent_color), 0.75);
+  --item_horizontal_padding: 10px;
+  --item_vertical_padding: calc(var(--commandpal_theme_spacing) * 0.33);
+
+  --shortcut_text_size: calc(var(--commandpal_theme_text_size) * 0.45);
+  --shortcut_text_weight: calc(var(--commandpal_theme_text_weight) * 1.5);
+  --shortcut_background_color: none;
+  --shortcut_border: none;
+  --shortcut_text_color: rgba(var(--commandpal_theme_text_color), 0.2);
+  --shortcut_selected_text_color: rgba(var(--commandpal_theme_text_color), 0.6);
+
+  --shortcut_symbol_text_size: calc(var(--commandpal_theme_text_size) * 0.37);
+  --shortcut_symbol_text_weight: calc(var(--commandpal_theme_text_weight) * 1.5);
+  --shortcut_symbol_text_color: rgba(var(--commandpal_theme_text_color), 0.6);
+  --shortcut_symbol_background_color: rgba(var(--commandpal_theme_gray_color), 0.3);
+  --shortcut_symbol_border_bottom: 1px solid rgba(var(--commandpal_theme_background_color), 0.25);
+  --shortcut_selected_symbol_text_color: rgba(var(--commandpal_theme_text_color), 0.87);
+  --shortcut_symbol_padding: calc(var(--commandpal_theme_spacing) * 0.33);
+  --shortcut_symbol_spacing: calc(var(--commandpal_theme_spacing) * 0.33);
 }
 
 #SCP .modal-container {
-  max-width: var(--containerWidth);
-  margin-top: var(--containerTop);
-  margin-left: calc(var(--containerLeft) - var(--containerWidth) / 2);
-  background-color: var(--containerBackground);
-  border-radius: 8px;
-  border: thin groove var(--containerBorderColor);
+  max-width: var(--palette_width);
+  margin-top: var(--palette_top);
+  margin-left: calc(var(--palette_left) - var(--palette_width) / 2);
+  background-color: var(--palette_background);
+  border-radius: var(--palette_border_radius);
+  border: thin groove var(--palette_border_color);
   padding: 0;
-  padding-bottom: var(--containerPadding);
-  box-shadow: #00000021 0px 2px 16px;
+  padding-bottom: var(--palette_padding);
+  box-shadow: #00000021 0px 4px 12px;
+  backdrop-filter: blur(var(--palette_background_blur));
 }
 
 #SCP .search-box {
   padding: 0;
-  margin-top: var(--searchVerticalPadding);
-  margin-bottom: var(--searchVerticalPadding);
-  margin-left: calc(var(--searchHorizontalPadding) + var(--containerPadding));
-  margin-right: calc(var(--searchHorizontalPadding) + var(--containerPadding));
+  margin-top: var(--search_vertical_padding);
+  margin-bottom: var(--search_vertical_padding);
+  margin-left: calc(var(--search_horizontal_padding) + var(--palette_padding));
+  margin-right: calc(var(--search_horizontal_padding) + var(--palette_padding));
 }
 #SCP .search {
-  font-family: system-ui, -apple-system, 'Helvetica Neue', Helvetica, BlinkMacSystemText, 'Segoe UI',
-    Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
-  font-weight: 300;
-  font-size: var(--searchTextSize);
+  font-family: var(--palette_font);
+  font-weight: var(--search_text_weight);
+  font-size: var(--search_text_size);
   height: auto;
   border: none;
   color: #ccc;
@@ -55,7 +94,7 @@
 }
 #SCP .search::selection {
   color: #ffffffff;
-  background-color: #787fff7f;
+  background-color: var(--search_text_selection);
 }
 #SCP .item-list {
   margin: 0;
@@ -63,20 +102,20 @@
 }
 #SCP .no-matches,
 #SCP .item {
-  font-family: system-ui, -apple-system, 'Helvetica Neue', Helvetica, BlinkMacSystemText, 'Segoe UI',
-    Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
-  font-weight: 400;
-  font-size: var(--itemTextSize);
+  font-family: var(--palette_font);
+  font-weight: var(--item_text_weight);
+  font-size: var(--item_text_size);
   color: #ffffff8c;
-  border-radius: 4px;
-  height: calc(var(--itemTextSize) * 2 + var(--itemVerticalPadding) * 2);
-  margin: 0 var(--containerPadding);
+  border-radius: calc(var(--palette_border_radius) * 0.67);
+  height: calc(var(--item_text_size) * 2 + var(--item_vertical_padding) * 2);
+  margin: 0;
+  margin-left: var(--palette_padding);
   padding: 0;
-  padding-left: var(--itemHorizontalPadding);
-  padding-right: var(--itemHorizontalPadding);
+  padding-left: var(--item_horizontal_padding);
+  padding-right: var(--item_horizontal_padding);
 }
 #SCP .no-matches {
-  padding: var(--searchHorizontalPadding);
+  padding: var(--search_horizontal_padding);
   padding-top: 7px;
 }
 
@@ -89,32 +128,56 @@
 }
 #SCP .item.selected {
   color: #fff;
-  background-color: #7980ff7f;
+  background-color: var(--item_selected_background);
 }
 #SCP kyb {
-  font-family: system-ui, -apple-system, 'Helvetica Neue', Helvetica, BlinkMacSystemText, 'Segoe UI',
-    Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
-  font-weight: 500;
-  background: none;
-  color: var(--shortcutTextColor);
-  border: none;
-  font-size: var(--shortcutTextSize);
-  text-transform: uppercase;
+  font-family: var(--palette_font);
+  font-weight: var(--shortcut_text_weight);
+  background-color: var(--shortcut_background_color);
+  color: var(--shortcut_text_color);
+  border: var(--shortcut_border);
+  font-size: var(--shortcut_text_size);
+}
+#SCP kyb .symbol {
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+  text-align: center;
+  font-size: var(--shortcut_symbol_text_size);
+  font-weight: var(--shortcut_symbol_text_weight);
+  color: var(--shortcut_symbol_text_color);
+  line-height: var(--shortcut_text_size);
+  background-color: var(--shortcut_symbol_background_color);
+  border-radius: calc((var(--shortcut_text_size) + var(--shortcut_symbol_padding) * 2) / 4);
+  border-bottom: var(--shortcut_symbol_border_bottom);
+  margin-left: var(--shortcut_symbol_spacing);
+  padding: var(--shortcut_symbol_padding);
+  min-width: calc(var(--shortcut_text_size) + var(--shortcut_symbol_padding) * 2);
+  min-height: calc(var(--shortcut_text_size) + var(--shortcut_symbol_padding) * 2);
 }
 #SCP .item.selected kyb {
-  color: var(--shortcutSelectedTextColor);
+  color: var(--shortcut_selected_text_color);
+}
+#SCP .item.selected kyb .symbol {
+  color: var(--shortcut_selected_symbol_text_color);
+}
+#SCP .items-list {
+  margin: 0;
+  padding: 0;
+  margin-right: calc(var(--palette_padding) * 0.6);
+  padding-right: calc(var(--palette_padding) * 0.4);
 }
 #SCP .items-list::-webkit-scrollbar {
-  width: 2px;
+  width: var(--palette_scrollbar_width);
 }
 #SCP .items-list::-webkit-scrollbar-track {
   background: transparent;
 }
 #SCP .items-list::-webkit-scrollbar-thumb {
-  background: #787fff54;
-  border-radius: 6px;
+  background: var(--palette_scrollbar_color);
+  border-radius: var(--palette_border_radius);
 }
 
 #SCP .modal-mask {
-  background-color: #00000000;
+  background-color: var(--palette_modal_mask);
 }

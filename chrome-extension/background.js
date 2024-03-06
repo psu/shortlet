@@ -1,6 +1,6 @@
 chrome.tabs.onUpdated.addListener(async (tabId, info) => {
   const tab = await chrome.tabs.get(tabId)
-  if (typeof tab.url === 'undefined') return undefined
+  if (typeof tab.url === 'undefined' || tab.url.includes('localhost')) return undefined
   if (info.status === 'complete') {
     const is_loaded = await exec(
       tabId,
@@ -18,7 +18,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'get_storage') {
     new Promise((resolve, reject) => {
       chrome.storage.local.get([request.key], storage => {
-        // if (chrome.runtime.lastError) reject(chrome.runtime.lastError)
+        if (chrome.runtime.lastError) reject(chrome.runtime.lastError)
         resolve(JSON.parse(storage[request.key]))
       })
     })
