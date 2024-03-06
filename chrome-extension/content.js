@@ -9,7 +9,7 @@
     })
   }
   function load(shortlet) {
-    return shortlet.commands.filter(s => window.location.href.includes(s.url))
+    return shortlet.commands.filter(s => window.location.href.includes(s.conditions.url))
   }
   const shortlet_object = await callServiceWorker({ action: 'get_storage', key: 'shortlet_object' })
   const loaded_commands = load(shortlet_object)
