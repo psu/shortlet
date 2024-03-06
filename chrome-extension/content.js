@@ -1,6 +1,4 @@
 ;(async () => {
-  // head
-
   function callServiceWorker(message) {
     return new Promise((resolve, reject) => {
       chrome.runtime.sendMessage(message, response => {
@@ -9,11 +7,11 @@
       })
     })
   }
-  function load(fromObject) {
-    return fromObject.commands.filter(s => window.location.href.indexOf(s.url) != -1)
+  function load(shortlet) {
+    return shortlet.commands.filter(s => window.location.href.indexOf(s.url) != -1)
   }
   function logSuccess(a = '') {
-    if (typeof logging === 'undefined') return
+    if (!logging) return
     const action = { ...a }
     let text = `🦾${action.do}`
     if (typeof action === 'object') {
@@ -24,11 +22,11 @@
         .join(', ')
       text += ')'
     }
-    console.log(`ShortletRunner: ${text}`)
+    console.log(`Shortlet: ${text}`)
   }
   function logError(err = '', action = '', o = {}) {
-    if (typeof logging === 'undefined') return
-    console.log(`ShortletRunner: Error for action '${action}'\n${JSON.stringify(o)}\n${err}`)
+    if (!logging) return
+    console.log(`Shortlet: Error for action '${action}'\n${JSON.stringify(o)}\n${err}`)
   }
   class Queue {
     constructor(queue = undefined, delay = undefined) {
@@ -96,33 +94,23 @@
     // start executing the queue
     queue.start()
   }
+  function parseForCommandPal(commands) {
+    if (commands.length > 0) {
+      return commands.map(cmd => ({
+        name: cmd.title,
+        description: `Executes ${cmd.actions.length} actions`,
+        shortcut: cmd.shortcut,
+        handler: () => {
+          Shortlet.runner(cmd.id)
+        },
+      }))
+    }
+    return { name: 'No Shortlets loaded…' }
+  }
 
   const logging = true
   const shortlet_object = await callServiceWorker({ action: 'get_storage', key: 'shortlet_object' })
   const loaded_commands = load(shortlet_object)
-
-  //ui
-  const ShowUI = () => {
-    if (window.___shortlet.loaded.length > 0) {
-      console.log('Show UI with items:', format(window.___shortlet.loaded))
-      return
-    }
-    console.log({ items: [{ title: `Shortlet: No commands found for '${window.location.href}'` }] })
-
-    function format(commands) {
-      if (commands.length > 0) {
-        return {
-          items: commands.map(s => ({
-            title: s.title,
-            uid: s.url + '_' + s.id,
-            id: s.id,
-            subtitle: `Executes ${s.actions.length} actions`,
-            arg: s.id,
-          })),
-        }
-      }
-    }
-  }
 
   // actions
   const actions = (function () {
@@ -311,10 +299,22 @@
     runner: runner,
     commands: loaded_commands,
     reload: load,
+    parse: parseForCommandPal,
   }
 })()
   .then(result => {
     window.Shortlet = result
+    new CommandPal({
+      commands: Shortlet.parse(Shortlet.commands),
+      hotkey: 'alt+space',
+      hotkeysGlobal: true,
+      id: 'SCP',
+      placeholder: ' ',
+      hideButton: true,
+      debugOutput: false,
+    }).start()
+
+    window.commandPalIgnoreBlur = true
   })
   .catch(err => {
     console.log('Error: ', err)

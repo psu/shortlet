@@ -1,0 +1,120 @@
+#SCP {
+  --containerPadding: 6px;
+  --searchTextSize: 32px;
+  --searchHorizontalPadding: 4px;
+  --searchVerticalPadding: 10px;
+  --itemHorizontalPadding: 10px;
+  --itemVerticalPadding: 2px;
+  --itemTextSize: 18px;
+  --shortcutTextSize: 12px;
+  --shortcutTextColor: #ffffff33;
+  --shortcutSelectedTextColor: #ffffff99;
+  --containerWidth: 600px;
+  --containerTop: 25vh;
+  --containerLeft: 42vw;
+  --containerBackground: #201920f0;
+  --containerBorderColor: #555;
+}
+
+#SCP .modal-container {
+  max-width: var(--containerWidth);
+  margin-top: var(--containerTop);
+  margin-left: calc(var(--containerLeft) - var(--containerWidth) / 2);
+  background-color: var(--containerBackground);
+  border-radius: 8px;
+  border: thin groove var(--containerBorderColor);
+  padding: 0;
+  padding-bottom: var(--containerPadding);
+  box-shadow: #00000021 0px 2px 16px;
+}
+
+#SCP .search-box {
+  padding: 0;
+  margin-top: var(--searchVerticalPadding);
+  margin-bottom: var(--searchVerticalPadding);
+  margin-left: calc(var(--searchHorizontalPadding) + var(--containerPadding));
+  margin-right: calc(var(--searchHorizontalPadding) + var(--containerPadding));
+}
+#SCP .search {
+  font-family: system-ui, -apple-system, 'Helvetica Neue', Helvetica, BlinkMacSystemText, 'Segoe UI',
+    Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+  font-weight: 300;
+  font-size: var(--searchTextSize);
+  height: auto;
+  border: none;
+  color: #ccc;
+  padding: 0;
+  margin: 0;
+  background-color: transparent;
+}
+#SCP .search::placeholder {
+  color: #888;
+}
+#SCP .search:focus {
+  color: white;
+}
+#SCP .search::selection {
+  color: #ffffffff;
+  background-color: #787fff7f;
+}
+#SCP .item-list {
+  margin: 0;
+  padding: 0;
+}
+#SCP .no-matches,
+#SCP .item {
+  font-family: system-ui, -apple-system, 'Helvetica Neue', Helvetica, BlinkMacSystemText, 'Segoe UI',
+    Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+  font-weight: 400;
+  font-size: var(--itemTextSize);
+  color: #ffffff8c;
+  border-radius: 4px;
+  height: calc(var(--itemTextSize) * 2 + var(--itemVerticalPadding) * 2);
+  margin: 0 var(--containerPadding);
+  padding: 0;
+  padding-left: var(--itemHorizontalPadding);
+  padding-right: var(--itemHorizontalPadding);
+}
+#SCP .no-matches {
+  padding: var(--searchHorizontalPadding);
+  padding-top: 7px;
+}
+
+#SCP .item span {
+  margin-top: 1px;
+}
+#SCP .item:hover {
+  background: none;
+  color: #fff;
+}
+#SCP .item.selected {
+  color: #fff;
+  background-color: #7980ff7f;
+}
+#SCP kyb {
+  font-family: system-ui, -apple-system, 'Helvetica Neue', Helvetica, BlinkMacSystemText, 'Segoe UI',
+    Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+  font-weight: 500;
+  background: none;
+  color: var(--shortcutTextColor);
+  border: none;
+  font-size: var(--shortcutTextSize);
+  text-transform: uppercase;
+}
+#SCP .item.selected kyb {
+  color: var(--shortcutSelectedTextColor);
+}
+#SCP .items-list::-webkit-scrollbar {
+  width: 2px;
+}
+#SCP .items-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+#SCP .items-list::-webkit-scrollbar-thumb {
+  background: #787fff54;
+  border-radius: 6px;
+}
+
+#SCP .modal-mask {
+  background-color: #00000000;
+}

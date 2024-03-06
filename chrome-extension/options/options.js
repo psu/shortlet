@@ -1,8 +1,8 @@
 // Saves options to chrome.storage
 const saveOptions = () => {
-  const shortlets = document.getElementById('shortlets').value
+  const shortlet = document.getElementById('commands').value
 
-  chrome.storage.local.set({ shortlet_object: shortlets }, () => {
+  chrome.storage.local.set({ shortlet_object: shortlet }, () => {
     // Update status to let user know options were saved.
     const save = document.getElementById('save')
     const org = save.textContent
@@ -17,7 +17,7 @@ const saveOptions = () => {
 // stored in chrome.storage.
 const restoreOptions = () => {
   chrome.storage.local.get(['shortlet_object'], items => {
-    document.getElementById('shortlets').value = items.shortlets
+    document.getElementById('commands').value = items['shortlet_object']
   })
 }
 
