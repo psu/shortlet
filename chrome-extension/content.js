@@ -1,5 +1,5 @@
 ;(async () => {
-  const dev_mode = false
+  const dev_mode = true
   function callServiceWorker(message) {
     return new Promise((resolve, reject) => {
       chrome.runtime.sendMessage(message, response => {
@@ -118,19 +118,77 @@
     const selectAll = s => {
       return Object.entries(document.querySelectorAll(s)).map(o => o[1])
     }
+    const selectOneWithText = (s, t) => {
+      let elements = selectAll(s).filter(el => matchInnerText(el, t))
+      if (elements.length == 0) throw new Error('Shortlet: No elements found')
+      if (elements.length > 1)
+        elements = elements.filter(async el => (await isInViewPort(el)) && isFrontmost(el))
+      if (elements.length > 1)
+        throw new Error(`Shortlet: Too many elements found (${elements.length})`)
+      return elements[0]
+    }
+    const selectAllWithText = (s, t) => {
+      return selectAll(s).filter(el => matchInnerText(el, t))
+    }
     const matchInnerText = (el, t) => {
-      return el.innerText.toLowerCase().trim().match(t) !== null
+      return el.innerText.toLowerCase().trim().match(t.toLowerCase().trim()) !== null
     }
-    const isFrontmost = el => {
+    const isInViewPort = element => {
+      return new Promise((resolve, reject) => {
+        const observer = new IntersectionObserver(entries => {
+          resolve(entries[0].isIntersecting)
+        })
+        observer.observe(element)
+        setTimeout(() => {
+          observer.unobserve(element)
+          observer.disconnect()
+        }, 10)
+      })
+    }
+    const getCSSRecursive = (el, prop) => {
+      const ignore_list = ['auto', 'none', 'inherit', 'initial', 'revert', 'unset']
+      if (el.tagName === 'BODY') {
+        const o = document.createElement('div')
+        o[prop] = 0
+        return o
+      } //throw new Error(`Shortlet: No parent have an explicit value set for '${prop}'`)
+      const style = getComputedStyle(el)
+      if (!ignore_list.includes(style[prop])) {
+        return el
+      } else {
+        return getCSSRecursive(el.parentElement, prop)
+      }
+    }
+    const reduceOnHighestCSS = (el_list, prop) => {
+      if (el_list.length < 2) return el_list
+      return el_list.reduce((el_acc, el) => {
+        const el_ancestor_value = getComputedStyle(getCSSRecursive(el, prop))[prop]
+        const el_acc_ancestor_value = getComputedStyle(getCSSRecursive(el_acc, prop))[prop]
+        return el_acc_ancestor_value > el_ancestor_value ? el_acc : el
+      })
+    }
+    const getFrontmost = el_list => {
+      reduceOnHighestCSS(el_list, 'zIndex')
+    }
+    const isElementFromPoint = el => {
       const el_rect = el.getBoundingClientRect()
-      return document
-        .elementFromPoint(el_rect.left + el_rect.width / 2, el_rect.top + el_rect.height / 2)
-        .isSameNode(el)
+      try {
+        const el_p = document.elementFromPoint(
+          el_rect.left + el_rect.width / 2,
+          el_rect.top + el_rect.height / 2
+        )
+        return el_p.isSameNode(el)
+      } catch (e) {
+        //if (dev_mode) console.log('Shortlet: No element from point.', el_rect)
+        return false
+      }
     }
+    // isCSSVisible - recursive function checking element and it's parents for
+    // getComputedStyle(document.querySelector('.sc-eBHJIF.gcQAcw').parentElement).display ==="none" (not "none" doesn't mean it is visible…)
     const clickIt = el_list => {
       if (!Array.isArray(el_list)) el_list = [el_list]
       if (el_list.length > 0) el_list.forEach(el => el.click())
-      else throw new Error('No elements found')
+      else throw new Error('Shortlet: No elements found')
     }
     const blur = o => {
       if (selectOne(':focus') !== null) selectOne(':focus').blur()
@@ -172,20 +230,23 @@
       },
       click: o => {
         if (typeof o.text === 'string') {
-          clickIt(
-            selectAll(o.on)
-              .filter(el => matchInnerText(el, o.text))
-              .filter(el => isFrontmost(el))
-              .slice(0, 1)
-          )
-        } else {
-          clickIt(selectOne(o.on))
+          clickIt(selectOneWithText(o.on, o.text))
         }
+        clickIt(selectOne(o.on))
       },
       click_all: o => {
-        if (typeof o.text === 'string')
-          clickIt(selectAll(o.on).filter(el => matchInnerText(el, o.text)))
+        if (typeof o.text === 'string') clickIt(selectAllWithText(o.on, o.text))
         else clickIt(selectAll(o.on))
+      },
+      click_first: o => {
+        if (typeof o.text === 'string') clickIt(selectAllWithText(o.on, o.text).slice(0, 1))
+        else clickIt(selectAll(o.on).slice(0, 1))
+      },
+      click_front: o => {
+        let el_list
+        if (typeof o.text === 'string') el_list = selectAllWithText(o.on, o.text)
+        else el_list = selectAll(o.on)
+        clickIt(reduceOnHighestCSS(el_list))
       },
       blur: blur,
       focus: o => {
@@ -227,6 +288,16 @@
       check: o => {
         selectAll(o.on).forEach(el => triggerEvent(el, 'click'))
       },
+      copy: o => {
+        navigator.clipboard.writeText(selectOne(o.on).innerText.trim())
+      },
+      copy_all: o => {
+        navigator.clipboard.writeText(
+          selectAll(o.on)
+            .map(el => el.innerText.trim())
+            .join('\n')
+        )
+      },
       reveal_data: o => {
         // get the contents of the property 'data-XXX' (set data to "XXX")
         // for all elements matching 'on'
@@ -251,7 +322,8 @@
           if (groups) {
             groups.shift()
             const output = groups.join(o.join)
-            const target = selectOne('' + el.getAttribute('for'))
+            const target = selectOne('#' + el.getAttribute('for'))
+            console.log(target)
             Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(
               target,
               output

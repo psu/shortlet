@@ -67,24 +67,39 @@
   box-shadow: #00000021 0px 4px 12px;
   backdrop-filter: blur(var(--palette_background_blur));
 }
-
 #SCP .search-box {
+  background: none;
+  border: none;
+  border-radius: none;
+  margin: 0;
+  padding: 0;
+}
+
+#SCP input,
+#SCP input:active,
+#SCP :focus:not(:focus-visible),
+#SCP input:not([disabled]):focus,
+#SCP input:focus {
+  outline: none !important;
+  outline-offset: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+#SCP .search {
+  font-family: var(--palette_font);
+  font-weight: var(--search_text_weight);
+  font-size: var(--search_text_size);
+  height: 38px;
+  border: none;
+  color: #ccc;
   padding: 0;
   margin-top: var(--search_vertical_padding);
   margin-bottom: var(--search_vertical_padding);
   margin-left: calc(var(--search_horizontal_padding) + var(--palette_padding));
   margin-right: calc(var(--search_horizontal_padding) + var(--palette_padding));
-}
-#SCP .search {
-  font-family: var(--palette_font);
-  font-weight: var(--search_text_weight);
-  font-size: var(--search_text_size);
-  height: auto;
-  border: none;
-  color: #ccc;
-  padding: 0;
-  margin: 0;
   background-color: transparent;
+  width: calc(100% - var(--search_horizontal_padding) * 2 - var(--palette_padding) * 2);
 }
 #SCP .search::placeholder {
   color: #888;
@@ -116,7 +131,7 @@
 }
 #SCP .no-matches {
   padding: var(--search_horizontal_padding);
-  padding-top: 7px;
+  padding-top: var(--commandpal_theme_spacing);
 }
 
 #SCP .item span {
