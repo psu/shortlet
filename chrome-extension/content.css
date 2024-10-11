@@ -137,10 +137,6 @@
 #SCP .item span {
   margin-top: 1px;
 }
-#SCP .item:hover {
-  background: none;
-  color: #fff;
-}
 #SCP .item.selected {
   color: #fff;
   background-color: var(--item_selected_background);

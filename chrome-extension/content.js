@@ -9,7 +9,7 @@
     })
   }
   function load(shortlet) {
-    return shortlet.commands.filter(s => window.location.href.includes(s.conditions.url))
+    return shortlet.commands.filter(s => window.location.href.match(s.conditions.url) != null)
   }
   const shortlet_object = await callServiceWorker({ action: 'get_storage', key: 'shortlet_object' })
   const loaded_commands = load(shortlet_object)
@@ -70,32 +70,32 @@
 
     const queue = new Queue()
     // add all actions in the array to the queue as functions wrapped in try…catch
-
     for (let i = 0; i < shortlet.repeat; i++) {
-      shortlet.actions.forEach(a => {
-        const item = () => {
-          try {
-            actions[a.do](a)
-            logSuccess(a)
-          } catch (err) {
-            if (typeof a.fallback === 'object') {
-              try {
-                actions[a.do](a.fallback)
-                logSuccess({ do: `${a.do}:fallback`, ...a.fallback })
-              } catch (err) {
-                logError(err, `${a.do}:fallback`, a)
-              }
-            } else {
-              logError(err, a.do, a)
-            }
-          }
-        }
-        queue.add(item, a.delay)
-      })
+      shortlet.actions.forEach(a => queueAction(queue, a))
     }
 
     // start executing the queue
     queue.start()
+  }
+  function queueAction(q, a) {
+    const item = () => {
+      try {
+        actions[a.do](a)
+        logSuccess(a)
+      } catch (err) {
+        if (typeof a.fallback === 'object') {
+          try {
+            actions[a.do](a.fallback)
+            logSuccess({ do: `${a.do}:fallback`, ...a.fallback })
+          } catch (err) {
+            logError(err, `${a.do}:fallback`, a)
+          }
+        } else {
+          logError(err, a.do, a)
+        }
+      }
+    }
+    q.add(item, a.delay)
   }
   function parseForCommandPal(commands) {
     if (commands.length > 0) {
@@ -197,10 +197,15 @@
     //   Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(el, text)
     //   el.dispatchEvent(new Event('input', { bubbles: true }))
     // }
-    const setInput = (el, attr, value, event = undefined) => {
-      if (typeof event !== 'string') event = 'input'
+    const setInput = (el, attr, value) => {
       callSetProperty(el, attr, value)
-      dispatchEvent(el, event)
+      dispatchKeyboardEvent(el, 'keydown')
+      dispatchEvent(el, 'input')
+    }
+    const setChecked = (el, value = undefined) => {
+      if (typeof value !== 'string') value = 'checked'
+      callSetProperty(el, 'checked', value)
+      dispatchEvent(el, 'mousedown')
     }
     const dispatchEvent = (el, event, options = undefined) => {
       if (typeof options !== 'object') options = { bubbles: true }
@@ -216,7 +221,19 @@
     const callSetProperty = (el, attr, value) => {
       Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, attr).set.call(el, value)
     }
-    //
+    const runMe = me => {
+      if (typeof me === 'string') {
+        return runner(me)
+      }
+      if (typeof me !== 'undefined') {
+        if (!Array.isArray(me)) me = [me]
+        const queue = new Queue()
+        me.forEach(a => queueAction(queue, a))
+        queue.start()
+      }
+    }
+
+    // this is the Shortlet API ↓
     return {
       goto: o => {
         if (o.append === true) window.location += o.url
@@ -248,7 +265,9 @@
         else el_list = selectAll(o.on)
         clickIt(reduceOnHighestCSS(el_list))
       },
-      blur: blur,
+      blur: () => {
+        blur()
+      },
       focus: o => {
         blur()
         selectOne(o.on).focus()
@@ -280,13 +299,13 @@
         })
       },
       input: o => {
-        setInput(selectOne(o.on), 'input', o.text, 'input')
+        setInput(selectOne(o.on), 'value', o.text)
       },
       html_attribute: o => {
-        selectAll(o.on).forEach(el => setInput(el, o.attribute, o.value, 'mouseup'))
+        selectAll(o.on).forEach(el => callSetProperty(el, o.attribute, o.value))
       },
       check: o => {
-        selectAll(o.on).forEach(el => triggerEvent(el, 'click'))
+        selectAll(o.on).forEach(el => setChecked(el, o.value))
       },
       copy: o => {
         navigator.clipboard.writeText(selectOne(o.on).innerText.trim())
@@ -298,6 +317,39 @@
             .join('\n')
         )
       },
+      iife: o => {
+        window.location = `javascript:(function(){${o.script}})();`
+      },
+      duplicate: o => {
+        selectAll(o.on).forEach(el => {
+          const n = el.cloneNode(true)
+          el.after(n)
+          n.id = o.id
+        })
+      },
+      set_attr: o => {
+        o.attribute = o.attribute || o.attr
+        selectAll(o.on).forEach(el => el.setAttribute(o.attribute, o.value))
+      },
+      set_text: o => {
+        selectAll(o.on).forEach(el => (el.innerText = o.text))
+      },
+      style: o => {
+        o.property = o.property || o.prop
+        selectAll(o.on).forEach(el => (el.style[o.property] = o.value))
+      },
+      add_event: o => {
+        selectAll(o.on).forEach(el =>
+          el.addEventListener(o.event, () => {
+            runMe(o.actions)
+          })
+        )
+      },
+      run: o => {
+        runMe(o.shortlet || o.actions)
+      },
+      // not updated ↓
+
       reveal_data: o => {
         // get the contents of the property 'data-XXX' (set data to "XXX")
         // for all elements matching 'on'
@@ -337,9 +389,6 @@
         const el = typeof o.on === 'string' ? selectOne(o.on) : window
         dispatchKeyboardEvent(el, o.key, o.event, o.options)
       },
-      iife: o => {
-        window.location = `javascript:(function(){${o.script}})();`
-      },
       dispatch_enter: o => {
         document.querySelector(o.on).dispatchEvent(
           new KeyboardEvent('keydown', {
@@ -368,50 +417,61 @@
   })()
 
   // expose
-  return {
+  const expose = {
     runner: runner,
     commands: loaded_commands,
     reload: load,
     parse: parseForCommandPal,
     dev_mode: dev_mode,
   }
+  return new Promise(resolve => {
+    resolve(expose)
+  })
 })()
   .then(result => {
-    window.Shortlet = result
     let dev_menu = []
-    if (Shortlet.dev_mode) {
-      window.commandPalIgnoreBlur = true
-      dev_menu = [
-        {
-          name: 'Dev…',
-          children: [
-            {
-              name: "Toggle 'Ignore Blur'",
-              handler: () => {
-                window.commandPalIgnoreBlur =
-                  typeof window.commandPalIgnoreBlur === 'undefined'
-                    ? false
-                    : !window.commandPalIgnoreBlur
+    try {
+      window.Shortlet = result
+      if (Shortlet.dev_mode) {
+        window.commandPalIgnoreBlur = true
+        dev_menu = [
+          {
+            name: 'Dev…',
+            children: [
+              {
+                name: "Toggle 'Ignore Blur'",
+                handler: () => {
+                  window.commandPalIgnoreBlur =
+                    typeof window.commandPalIgnoreBlur === 'undefined'
+                      ? false
+                      : !window.commandPalIgnoreBlur
+                },
               },
-            },
-            { name: 'Another command' },
-          ],
-        },
-      ]
+              { name: 'Another command' },
+            ],
+          },
+        ]
+      }
+      try {
+        new CommandPal({
+          commands: [...Shortlet.parse(Shortlet.commands), ...dev_menu],
+          hotkey: 'alt+space',
+          hotkeysGlobal: true,
+          id: 'SCP',
+          placeholder: ' ',
+          hideButton: true,
+          debugOutput: Shortlet.dev_mode,
+          displayShortcutSymbols: true,
+          shortcutOpenPalette: false,
+          emptyResultText: 'No shortlets loaded.',
+        }).start()
+      } catch (e) {
+        console.log('Error: Load CommandPal: ', e)
+      }
+    } catch (e) {
+      console.log('Error: Load Shortlet: ', e)
     }
-    new CommandPal({
-      commands: [...Shortlet.parse(Shortlet.commands), ...dev_menu],
-      hotkey: 'alt+space',
-      hotkeysGlobal: true,
-      id: 'SCP',
-      placeholder: ' ',
-      hideButton: true,
-      debugOutput: Shortlet.dev_mode,
-      displayShortcutSymbols: true,
-      shortcutOpenPalette: false,
-      emptyResultText: 'No shortlets loaded.',
-    }).start()
   })
   .catch(err => {
-    console.log('Error: ', err)
+    console.log('Error: Init: ', err)
   })

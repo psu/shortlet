@@ -20,9 +20,6 @@
 .item {
   color: white;
 }
-.item:hover {
-  background-color: rgb(24, 94, 173);
-}
 .item.selected {
   background-color: rgb(26, 77, 134);
 }
