@@ -1,5 +1,10 @@
 ;(async () => {
-  const dev_mode = true
+  // start
+  const _dev_mode = await callServiceWorker({ action: 'get_storage', key: 'dev_mode' })
+  const shortlet_object = await callServiceWorker({ action: 'get_storage', key: 'shortlet_object' })
+  const _loaded_shlts = _loadShortletsForPage(shortlet_object.shortlets, window.location.href)
+
+  // intra-extension communication
   function callServiceWorker(message) {
     return new Promise((resolve, reject) => {
       chrome.runtime.sendMessage(message, response => {
@@ -8,29 +13,7 @@
       })
     })
   }
-  function load(shortlet) {
-    return shortlet.commands.filter(s => window.location.href.match(s.conditions.url) != null)
-  }
-  const shortlet_object = await callServiceWorker({ action: 'get_storage', key: 'shortlet_object' })
-  const loaded_commands = load(shortlet_object)
-  function logSuccess(a = '') {
-    if (!dev_mode) return
-    const action = { ...a }
-    let text = `🦾${action.do}`
-    if (typeof action === 'object') {
-      text = `🦾${action.do}   (`
-      delete action.do
-      text += Object.entries(action)
-        .map(o => `${o[0]}: ${JSON.stringify(o[1])}`)
-        .join(', ')
-      text += ')'
-    }
-    console.log(`Shortlet: ${text}`)
-  }
-  function logError(err = '', action = '', o = {}) {
-    if (!dev_mode) return
-    console.log(`Shortlet: Error for action '${action}'\n${JSON.stringify(o)}\n${err}`)
-  }
+  // internal queue system
   class Queue {
     constructor(queue = undefined, delay = undefined) {
       this.delay = 0
@@ -62,30 +45,35 @@
       delete this.timer
     }
   }
-  function runner(id) {
-    const shortlet = loaded_commands.filter(s => s.id === id)[0]
-    // assert format
-    if (!Array.isArray(shortlet.actions)) shortlet.actions = [shortlet.actions]
-    if (typeof shortlet.repeat !== 'number' || shortlet.repeat < 0) shortlet.repeat = 1
-
-    const queue = new Queue()
-    // add all actions in the array to the queue as functions wrapped in try…catch
-    for (let i = 0; i < shortlet.repeat; i++) {
-      shortlet.actions.forEach(a => queueAction(queue, a))
-    }
-
-    // start executing the queue
-    queue.start()
-  }
+  // helper to wrap and queue a single action
   function queueAction(q, a) {
-    const item = () => {
+    // logging templates
+    const logSuccess = (a = '') => {
+      if (!_dev_mode) return
+      const action = { ...a }
+      let text = `🦾${action.do}`
+      if (typeof action === 'object') {
+        text = `🦾${action.do}   (`
+        delete action.do
+        text += Object.entries(action)
+          .map(o => `${o[0]}: ${JSON.stringify(o[1])}`)
+          .join(', ')
+        text += ')'
+      }
+      console.log(`Shortlet: ${text}`)
+    }
+    const logError = (err = '', action = '', o = {}) => {
+      if (!_dev_mode) return
+      console.log(`Shortlet: Error for action '${action}'\n${JSON.stringify(o)}\n${err}`)
+    }
+    const actionWrapper = () => {
       try {
-        actions[a.do](a)
+        actions_api[a.do](a)
         logSuccess(a)
       } catch (err) {
         if (typeof a.fallback === 'object') {
           try {
-            actions[a.do](a.fallback)
+            actions_api[a.do](a.fallback)
             logSuccess({ do: `${a.do}:fallback`, ...a.fallback })
           } catch (err) {
             logError(err, `${a.do}:fallback`, a)
@@ -95,23 +83,10 @@
         }
       }
     }
-    q.add(item, a.delay)
-  }
-  function parseForCommandPal(commands) {
-    if (commands.length > 0) {
-      return commands.map(cmd => ({
-        name: cmd.title,
-        description: `Executes ${cmd.actions.length} actions`,
-        shortcut: cmd.shortcut,
-        handler: () => {
-          Shortlet.runner(cmd.id)
-        },
-      }))
-    }
-    return []
+    q.add(actionWrapper, a.delay)
   }
   // actions
-  const actions = (function () {
+  const actions_api = (function () {
     const selectOne = s => {
       return document.querySelector(s)
     }
@@ -223,7 +198,7 @@
     }
     const runMe = me => {
       if (typeof me === 'string') {
-        return runner(me)
+        return _runShortlet(window.Shortlet.shortlets[me])
       }
       if (typeof me !== 'undefined') {
         if (!Array.isArray(me)) me = [me]
@@ -415,17 +390,49 @@
       },
     }
   })()
-
-  // expose
-  const expose = {
-    runner: runner,
-    commands: loaded_commands,
-    reload: load,
-    parse: parseForCommandPal,
-    dev_mode: dev_mode,
+  // load shortlets for the current webpage
+  function _loadShortletsForPage(shlts, url) {
+    return shlts.filter(s => url.match(s.conditions.url) != null)
   }
+  // run a shortlet aka. queue its actions and exec the queue
+  function _runShortlet(s) {
+    // assert format
+    if (!Array.isArray(s.actions)) s.actions = [s.actions]
+    if (typeof s.repeat !== 'number' || s.repeat < 0) s.repeat = 1
+    // create queue
+    const queue = new Queue()
+    // add all actions in the array to the queue as functions wrapped in try…catch
+    for (let i = 0; i < s.repeat; i++) {
+      s.actions.forEach(a => queueAction(queue, a))
+    }
+    // start executing the queue
+    queue.start()
+  }
+  //
+  function _parseShortletsForCommandPal(shlts) {
+    if (!Array.isArray(shlts)) shlts = [shlts]
+    if (shlts.length > 0) {
+      return shlts.map(s => ({
+        name: s.title,
+        description: `Executes ${s.actions.length} actions`,
+        shortcut: s.shortcut,
+        handler: () => {
+          Shortlet.run(s)
+        },
+      }))
+    }
+    return []
+  }
+
+  // expose a pre-loaded Shortlet object
   return new Promise(resolve => {
-    resolve(expose)
+    resolve({
+      run: _runShortlet,
+      reload: _loadShortletsForPage,
+      parse: _parseShortletsForCommandPal,
+      shortlets: _loaded_shlts,
+      dev_mode: _dev_mode,
+    })
   })
 })()
   .then(result => {
@@ -454,7 +461,7 @@
       }
       try {
         new CommandPal({
-          commands: [...Shortlet.parse(Shortlet.commands), ...dev_menu],
+          commands: [...Shortlet.parse(Shortlet.shortlets), ...dev_menu],
           hotkey: 'alt+space',
           hotkeysGlobal: true,
           id: 'SCP',
@@ -463,15 +470,15 @@
           debugOutput: Shortlet.dev_mode,
           displayShortcutSymbols: true,
           shortcutOpenPalette: false,
-          emptyResultText: 'No shortlets loaded.',
+          emptyResultText: 'No Shortlets',
         }).start()
       } catch (e) {
-        console.log('Error: Load CommandPal: ', e)
+        console.log('Error loading CommandPal: ', e)
       }
     } catch (e) {
-      console.log('Error: Load Shortlet: ', e)
+      console.log('Error loading Shortlet: ', e)
     }
   })
   .catch(err => {
-    console.log('Error: Init: ', err)
+    console.log('Error while init: ', err)
   })

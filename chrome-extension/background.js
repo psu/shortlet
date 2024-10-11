@@ -7,8 +7,8 @@ chrome.tabs.onUpdated.addListener(async (tabId, info) => {
       () => typeof CommandPal === 'function' && typeof Shortlet === 'object'
     )
     if (!is_loaded[0].result) {
-      await exec(tabId, ['command-pal/bundle.js', 'content.js'])
-      await style(tabId, ['command-pal/theme-dark.css', 'content.css'])
+      await exec(tabId, ['command-pal/bundle.js', 'shortlet/shortlet.js'])
+      await style(tabId, ['command-pal/theme-dark.css', 'shortlet/shortlet.css'])
     }
   }
 })
