@@ -1,5 +1,5 @@
 # Shortlet
 
-![Shortlet icon](./icon.png)
+Tinker the DOM
 
-[⤓ Download Workflow](https://github.com/psu/shortlet/raw/master/Shortlet.alfredworkflow)
+![Shortlet icon](img/icon.png)
