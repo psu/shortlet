@@ -1,4 +1,5 @@
-class Queue {
+// internal queue system
+class MiniQueue {
   constructor(queue = undefined, delay = undefined) {
     this.delay = 0
     this.queue = []

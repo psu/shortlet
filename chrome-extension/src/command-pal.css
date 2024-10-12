@@ -1,4 +1,4 @@
-#SCP {
+#shortlet-command-pal {
   /* theme */
   --commandpal_theme_accent_color: 240, 170, 50;
   --commandpal_theme_background_color: 32, 31, 32;
@@ -55,7 +55,7 @@
   --shortcut_symbol_spacing: calc(var(--commandpal_theme_spacing) * 0.33);
 }
 
-#SCP .modal-container {
+#shortlet-command-pal .modal-container {
   max-width: var(--palette_width);
   margin-top: var(--palette_top);
   margin-left: calc(var(--palette_left) - var(--palette_width) / 2);
@@ -67,7 +67,7 @@
   box-shadow: #00000021 0px 4px 12px;
   backdrop-filter: blur(var(--palette_background_blur));
 }
-#SCP .search-box {
+#shortlet-command-pal .search-box {
   background: none;
   border: none;
   border-radius: none;
@@ -75,18 +75,18 @@
   padding: 0;
 }
 
-#SCP input,
-#SCP input:active,
-#SCP :focus:not(:focus-visible),
-#SCP input:not([disabled]):focus,
-#SCP input:focus {
+#shortlet-command-pal input,
+#shortlet-command-pal input:active,
+#shortlet-command-pal :focus:not(:focus-visible),
+#shortlet-command-pal input:not([disabled]):focus,
+#shortlet-command-pal input:focus {
   outline: none !important;
   outline-offset: none !important;
   box-shadow: none !important;
   border: none !important;
 }
 
-#SCP .search {
+#shortlet-command-pal .search {
   font-family: var(--palette_font);
   font-weight: var(--search_text_weight);
   font-size: var(--search_text_size);
@@ -101,22 +101,22 @@
   background-color: transparent;
   width: calc(100% - var(--search_horizontal_padding) * 2 - var(--palette_padding) * 2);
 }
-#SCP .search::placeholder {
+#shortlet-command-pal .search::placeholder {
   color: #888;
 }
-#SCP .search:focus {
+#shortlet-command-pal .search:focus {
   color: white;
 }
-#SCP .search::selection {
+#shortlet-command-pal .search::selection {
   color: #ffffffff;
   background-color: var(--search_text_selection);
 }
-#SCP .item-list {
+#shortlet-command-pal .item-list {
   margin: 0;
   padding: 0;
 }
-#SCP .no-matches,
-#SCP .item {
+#shortlet-command-pal .no-matches,
+#shortlet-command-pal .item {
   font-family: var(--palette_font);
   font-weight: var(--item_text_weight);
   font-size: var(--item_text_size);
@@ -129,19 +129,19 @@
   padding-left: var(--item_horizontal_padding);
   padding-right: var(--item_horizontal_padding);
 }
-#SCP .no-matches {
+#shortlet-command-pal .no-matches {
   padding: var(--search_horizontal_padding);
   padding-top: var(--commandpal_theme_spacing);
 }
 
-#SCP .item span {
+#shortlet-command-pal .item span {
   margin-top: 1px;
 }
-#SCP .item.selected {
+#shortlet-command-pal .item.selected {
   color: #fff;
   background-color: var(--item_selected_background);
 }
-#SCP kyb {
+#shortlet-command-pal kyb {
   font-family: var(--palette_font);
   font-weight: var(--shortcut_text_weight);
   background-color: var(--shortcut_background_color);
@@ -149,7 +149,7 @@
   border: var(--shortcut_border);
   font-size: var(--shortcut_text_size);
 }
-#SCP kyb .symbol {
+#shortlet-command-pal kyb .symbol {
   margin: 0;
   padding: 0;
   display: inline-block;
@@ -166,29 +166,29 @@
   min-width: calc(var(--shortcut_text_size) + var(--shortcut_symbol_padding) * 2);
   min-height: calc(var(--shortcut_text_size) + var(--shortcut_symbol_padding) * 2);
 }
-#SCP .item.selected kyb {
+#shortlet-command-pal .item.selected kyb {
   color: var(--shortcut_selected_text_color);
 }
-#SCP .item.selected kyb .symbol {
+#shortlet-command-pal .item.selected kyb .symbol {
   color: var(--shortcut_selected_symbol_text_color);
 }
-#SCP .items-list {
+#shortlet-command-pal .items-list {
   margin: 0;
   padding: 0;
   margin-right: calc(var(--palette_padding) * 0.6);
   padding-right: calc(var(--palette_padding) * 0.4);
 }
-#SCP .items-list::-webkit-scrollbar {
+#shortlet-command-pal .items-list::-webkit-scrollbar {
   width: var(--palette_scrollbar_width);
 }
-#SCP .items-list::-webkit-scrollbar-track {
+#shortlet-command-pal .items-list::-webkit-scrollbar-track {
   background: transparent;
 }
-#SCP .items-list::-webkit-scrollbar-thumb {
+#shortlet-command-pal .items-list::-webkit-scrollbar-thumb {
   background: var(--palette_scrollbar_color);
   border-radius: var(--palette_border_radius);
 }
 
-#SCP .modal-mask {
+#shortlet-command-pal .modal-mask {
   background-color: var(--palette_modal_mask);
 }

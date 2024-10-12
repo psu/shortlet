@@ -1,7 +1,8 @@
 {
   "manifest_version": 3,
-  "version": "0.3",
+  "version": "1.0",
   "name": "Shortlet",
+  "description": "Tinker with the DOM",
   "action": {
     "default_icon": {
       "256": "./img/icon.png"
@@ -9,10 +10,32 @@
     "default_title": "Shortlet"
   },
   "background": {
-    "service_worker": "./background.js"
+    "service_worker": "src/service-worker.js"
   },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "exclude_matches": [
+        "*://sub.example.com/*"
+      ],
+      "css": [
+        "command-pal/theme-dark.css",
+        "src/command-pal.css"
+      ],
+      "js": [
+        "src/MiniQueue.js",
+        "src/ShortletAPI.js",
+        "command-pal/CommandPal.js",
+        "src/index.js"
+      ],
+      "run_at": "document_end",
+      "match_about_blank": true
+    }
+  ],
   "options_ui": {
-    "page": "options/options.html",
+    "page": "src/options.html",
     "open_in_tab": true
   },
   "permissions": [

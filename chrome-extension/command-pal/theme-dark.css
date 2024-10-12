@@ -1,29 +1,29 @@
-#SCP .modal-container {
+#shortlet-command-pal .modal-container {
   background-color: #555;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
 }
 
-#SCP .search {
+#shortlet-command-pal .search {
   border: 1px solid #0081cc;
   background-color: #777;
   color: #ddd;
 }
-#SCP .search::placeholder {
+#shortlet-command-pal .search::placeholder {
   color: #aaa;
 }
-#SCP .search:focus {
+#shortlet-command-pal .search:focus {
   color: white;
 }
 
 /* Filtered Items */
 
-#SCP .item {
+#shortlet-command-pal .item {
   color: white;
 }
-#SCP .item.selected {
+#shortlet-command-pal .item.selected {
   background-color: rgb(26, 77, 134);
 }
-#SCP kyb {
+#shortlet-command-pal kyb {
   background: #353535;
   color: #e2e2e2;
   border-bottom: 2px solid #7b7b7b;
