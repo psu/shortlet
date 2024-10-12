@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "version": "1.0",
   "name": "Shortlet",
-  "description": "Tinker with the DOM",
+  "description": "Hack the DOM",
   "action": {
     "default_icon": {
       "256": "./img/icon.png"
@@ -21,6 +21,7 @@
         "*://sub.example.com/*"
       ],
       "css": [
+        "src/shortlet.css",
         "command-pal/theme-dark.css",
         "src/command-pal.css"
       ],

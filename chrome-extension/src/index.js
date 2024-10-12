@@ -1,19 +1,18 @@
 ;(async () => {
+  // prep the dom
+  Object.entries(document.body.querySelectorAll('*'))
+    .map(o => o[1])
+    .filter(n => n.innerHTML.indexOf('<') == -1 && n.textContent.trim())
+    .forEach(n => {
+      n.setAttribute('_', n.textContent.trim().substring(0, 25))
+    })
+
   // get options from storage
   const trigger = await callServiceWorker({ action: 'get_storage', key: 'trigger' })
-  const trigger_in_input = await callServiceWorker({
-    action: 'get_storage',
-    key: 'trigger_in_input',
-  })
-  const shortlets_list = JSON.parse(
-    await callServiceWorker({
-      action: 'get_storage',
-      key: 'shortlets_list',
-    })
-  )
+  const trigger_in_input = await callServiceWorker({ action: 'get_storage', key: 'trigger_in_input' })
+  const shortlets_list = JSON.parse(await callServiceWorker({ action: 'get_storage', key: 'shortlets_list' }))
   const dev_mode = await callServiceWorker({ action: 'get_storage', key: 'dev_mode' })
-  const getShortlets = () =>
-    filterShortletsOnConditions(shortlets_list.shortlets, window.location.href)
+  const getShortlets = () => filterShortletsOnConditions(shortlets_list.shortlets, window.location.href)
 
   // intra-extension communication
   function callServiceWorker(message) {
@@ -115,6 +114,39 @@
           callServiceWorker({ action: 'load_api' })
         },
       },
+      {
+        name: 'Highlight Shortlets',
+        handler: () => {
+          if (dev_mode) console.log('====== Highlight start ======')
+          getShortlets()
+            .filter(s => s.shortcut)
+            .forEach(s => {
+              s.actions
+                .filter(a => a.on)
+                .forEach(a => {
+                  if (document.querySelector(a.on)) {
+                    if (dev_mode) console.log(a.on)
+                    runShortlet({
+                      actions: [
+                        {
+                          do: 'toggle_class',
+                          on: a.on,
+                          class: 'shortlet-highlight-element',
+                        },
+                        {
+                          do: 'tooltip',
+                          on: a.on,
+                          text: s.id,
+                          style: 'box-shadow:none;',
+                        },
+                      ],
+                    })
+                  }
+                })
+            })
+          if (dev_mode) console.log('====== Highlight end ======')
+        },
+      },
     ],
   })
   // dev commands
@@ -125,10 +157,7 @@
         {
           name: "Toggle 'Ignore Blur'",
           handler: () => {
-            window.commandPalIgnoreBlur =
-              typeof window.commandPalIgnoreBlur === 'undefined'
-                ? false
-                : !window.commandPalIgnoreBlur
+            window.commandPalIgnoreBlur = typeof window.commandPalIgnoreBlur === 'undefined' ? false : !window.commandPalIgnoreBlur
           },
         },
       ],

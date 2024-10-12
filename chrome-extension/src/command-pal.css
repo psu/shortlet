@@ -13,8 +13,7 @@
 
   /* all */
   --palette_modal_mask: rgba(0, 0, 0, var(--commandpal_theme_dim_page));
-  --palette_font: system-ui, -apple-system, 'Helvetica Neue', Helvetica, BlinkMacSystemText,
-    'Segoe UI', Ubuntu, sans-serif;
+  --palette_font: system-ui, -apple-system, 'Helvetica Neue', Helvetica, BlinkMacSystemText, 'Segoe UI', Ubuntu, sans-serif;
   --palette_border_radius: var(--commandpal_theme_roundness);
   --palette_padding: var(--commandpal_theme_spacing);
   --palette_width: var(--commandpal_theme_width);
@@ -53,8 +52,8 @@
   --shortcut_selected_symbol_text_color: rgba(var(--commandpal_theme_text_color), 0.87);
   --shortcut_symbol_padding: calc(var(--commandpal_theme_spacing) * 0.33);
   --shortcut_symbol_spacing: calc(var(--commandpal_theme_spacing) * 0.33);
+  z-index: 99999999;
 }
-
 #shortlet-command-pal .modal-container {
   max-width: var(--palette_width);
   margin-top: var(--palette_top);
@@ -64,7 +63,7 @@
   border: thin groove var(--palette_border_color);
   padding: 0;
   padding-bottom: var(--palette_padding);
-  box-shadow: #00000021 0px 4px 12px;
+  box-shadow: #00000044 0px 4px 22px;
   backdrop-filter: blur(var(--palette_background_blur));
 }
 #shortlet-command-pal .search-box {

@@ -1,4 +1,3 @@
-// actions
 const ShortletAPI = (() => {
   function selectOne(s) {
     return document.querySelector(s)
@@ -9,10 +8,8 @@ const ShortletAPI = (() => {
   function selectOneWithText(s, t) {
     let elements = selectAll(s).filter(el => matchInnerText(el, t))
     if (elements.length == 0) throw new Error('Shortlet: No elements found')
-    if (elements.length > 1)
-      elements = elements.filter(async el => (await isInViewPort(el)) && isFrontmost(el))
-    if (elements.length > 1)
-      throw new Error(`Shortlet: Too many elements found (${elements.length})`)
+    if (elements.length > 1) elements = elements.filter(async el => (await isInViewPort(el)) && isElementFromPoint(el))
+    if (elements.length > 1) throw new Error(`Shortlet: Too many elements found (${elements.length})`)
     return elements[0]
   }
   function selectAllWithText(s, t) {
@@ -61,10 +58,7 @@ const ShortletAPI = (() => {
   function isElementFromPoint(el) {
     const el_rect = el.getBoundingClientRect()
     try {
-      const el_p = document.elementFromPoint(
-        el_rect.left + el_rect.width / 2,
-        el_rect.top + el_rect.height / 2
-      )
+      const el_p = document.elementFromPoint(el_rect.left + el_rect.width / 2, el_rect.top + el_rect.height / 2)
       return el_p.isSameNode(el)
     } catch (e) {
       //if (dev_mode) console.log('Shortlet: No element from point.', el_rect)
@@ -136,8 +130,9 @@ const ShortletAPI = (() => {
     click: o => {
       if (typeof o.text === 'string') {
         clickIt(selectOneWithText(o.on, o.text))
+      } else {
+        clickIt(selectOne(o.on))
       }
-      clickIt(selectOne(o.on))
     },
     click_all: o => {
       if (typeof o.text === 'string') clickIt(selectAllWithText(o.on, o.text))
@@ -171,6 +166,11 @@ const ShortletAPI = (() => {
     },
     toggle_class: o => {
       selectAll(o.on).forEach(el => el.classList.toggle(...o.class.split(' ')))
+    },
+    add_style: o => {
+      const style = document.createElement('style')
+      style.textContent = o.text
+      document.head.appendChild(style)
     },
     show: o => {
       if (typeof o.type !== 'string') o.type = 'block'
@@ -252,6 +252,16 @@ const ShortletAPI = (() => {
         target.append(out_el)
       })
     },
+    tooltip: o => {
+      selectAll(o.on).forEach(el => {
+        const rect = el.getBoundingClientRect()
+        const out = document.createElement('span')
+        out.textContent = o.text
+        out.classList.add('shortlet-tooltip')
+        out.setAttribute('style', `left:${rect.left}px;top:${rect.top - 15}px;${o.style || ''}`)
+        document.body.append(out)
+      })
+    },
     copy_paste_label: o => {
       // get value(s) from selector with regex
       // find target or matching input field and paste
@@ -264,10 +274,7 @@ const ShortletAPI = (() => {
           const output = groups.join(o.join)
           const target = selectOne('#' + el.getAttribute('for'))
           console.log(target)
-          Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(
-            target,
-            output
-          )
+          Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(target, output)
           target.dispatchEvent(new Event('input', { bubbles: true }))
         }
       })

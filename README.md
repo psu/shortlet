@@ -1,5 +1,5 @@
 # Shortlet
 
-Tinker the DOM
+Hack the DOM
 
 ![Shortlet icon](img/icon.png)
