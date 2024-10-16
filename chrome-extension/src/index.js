@@ -1,19 +1,13 @@
 ;(async () => {
-  // prep the dom
-  Object.entries(document.body.querySelectorAll('*'))
-    .map(o => o[1])
-    .filter(n => n.innerHTML.indexOf('<') == -1 && n.textContent.trim())
-    .forEach(n => {
-      n.setAttribute('_', n.textContent.trim().substring(0, 25))
-    })
-
   // get options from storage
   const trigger = await callServiceWorker({ action: 'get_storage', key: 'trigger' })
   const trigger_in_input = await callServiceWorker({ action: 'get_storage', key: 'trigger_in_input' })
   const shortlets_list = JSON.parse(await callServiceWorker({ action: 'get_storage', key: 'shortlets_list' }))
   const dev_mode = await callServiceWorker({ action: 'get_storage', key: 'dev_mode' })
-  const getShortlets = () => filterShortletsOnConditions(shortlets_list.shortlets, window.location.href)
-
+  // get shortlets for the current webpage
+  function getShortlets() {
+    return shortlets_list.shortlets.filter(s => window.location.href.match(s.conditions.url) != null)
+  }
   // intra-extension communication
   function callServiceWorker(message) {
     return new Promise((resolve, reject) => {
@@ -40,9 +34,9 @@
       }
       console.log(`Shortlet: ${text}`)
     }
-    const logError = (err = '', action = '', o = {}) => {
+    const logError = (err = '', action = '', obj = {}) => {
       if (!dev_mode) return
-      console.log(`Shortlet: Error for action '${action}'\n${JSON.stringify(o)}\n${err}`)
+      console.log(`Shortlet: ${err}\nFor action '${action}'`, obj)
     }
     const actionWrapper = () => {
       try {
@@ -63,10 +57,6 @@
     }
     q.add(actionWrapper, a.delay)
   }
-  // load shortlets for the current webpage
-  function filterShortletsOnConditions(shlts, url) {
-    return shlts.filter(s => url.match(s.conditions.url) != null)
-  }
   // run a shortlet aka. queue its actions and exec the queue
   function runShortlet(s) {
     // assert format
@@ -85,31 +75,73 @@
   function parseShortletsForCommandPal(shlts) {
     if (!Array.isArray(shlts)) shlts = [shlts]
     if (shlts.length > 0) {
-      return shlts.map(s => ({
-        name: s.title,
-        description: `Executes ${s.actions.length} actions`,
-        shortcut: s.shortcut,
-        handler: () => {
-          runShortlet(s)
-        },
-      }))
+      return shlts
+        .filter(s => s.title)
+        .map(s => ({
+          name: s.title,
+          description: s.description || `Executes ${s.actions.length} actions`,
+          shortcut: s.shortcut,
+          handler: () => {
+            runShortlet(s)
+          },
+        }))
     }
     return []
   }
+  //
+  function extractActionsFromShortlets(shlts) {
+    return shlts
+      .filter(s => s.actions)
+      .map(s => s.actions)
+      .flat()
+  }
+  //
+  function extractFallbacksFromActions(actions) {
+    return actions
+      .filter(a => a.fallback)
+      .map(a => a.fallback)
+      .flat()
+  }
+  //
+  async function updateShortletDataAttributes(shlts) {
+    let actions = extractActionsFromShortlets(shlts)
+    actions = [...actions, ...extractFallbacksFromActions(actions)].filter(a => a && a.in && a.in == 'view').flat()
+    const els = [...actions.map(a => [...document.querySelectorAll(a.on)])].flat()
+    // filter doesn't work with promises so two steps are needed https://stackoverflow.com/questions/47095019/how-to-use-array-prototype-filter-with-async
+    const els_viewport = await Promise.all(els.map(observeInViewPort))
+    els.forEach((el, index) => {
+      el.setAttribute('data-shortlets_viewport', els_viewport[index])
+    })
+  }
+  //
+  function observeInViewPort(el) {
+    return new Promise((resolve, reject) => {
+      const observer = new IntersectionObserver(entries => {
+        resolve(entries[0].isIntersecting)
+      })
+      observer.observe(el)
+      setTimeout(() => {
+        observer.unobserve(el)
+        observer.disconnect()
+      }, 10)
+    })
+  }
   // shortlets as commands
-  const commands = parseShortletsForCommandPal(getShortlets())
+  const page_shortlets = getShortlets()
+  const commands = parseShortletsForCommandPal(page_shortlets)
   // system commands
   commands.push({
     name: 'Shortlet »',
     children: [
       {
-        name: 'Open Shortlet options',
+        name: 'Open extension options',
         handler: () => {
           callServiceWorker({ action: 'open_options' })
         },
       },
       {
-        name: 'Load ShortletAPI',
+        name: 'Load ShortletAPI.js',
+        description: 'into this world…',
         handler: () => {
           callServiceWorker({ action: 'load_api' })
         },
@@ -118,32 +150,30 @@
         name: 'Highlight Shortlets',
         handler: () => {
           if (dev_mode) console.log('====== Highlight start ======')
-          getShortlets()
+          const highlight_actions = page_shortlets
             .filter(s => s.shortcut)
-            .forEach(s => {
-              s.actions
+            .map(s => {
+              return s.actions
                 .filter(a => a.on)
-                .forEach(a => {
-                  if (document.querySelector(a.on)) {
-                    if (dev_mode) console.log(a.on)
-                    runShortlet({
-                      actions: [
-                        {
-                          do: 'toggle_class',
-                          on: a.on,
-                          class: 'shortlet-highlight-element',
-                        },
-                        {
-                          do: 'tooltip',
-                          on: a.on,
-                          text: s.id,
-                          style: 'box-shadow:none;',
-                        },
-                      ],
-                    })
-                  }
+                .map(a => {
+                  if (dev_mode) console.log(a.on)
+                  return [
+                    {
+                      do: 'toggle_class',
+                      on: a.on,
+                      class: 'shortlet-highlight-element',
+                    },
+                    {
+                      do: 'tooltip',
+                      on: a.on,
+                      text: s.id,
+                      style: 'box-shadow:none;',
+                    },
+                  ]
                 })
             })
+          runShortlet({ actions: highlight_actions.flat(2) })
+
           if (dev_mode) console.log('====== Highlight end ======')
         },
       },
@@ -164,7 +194,7 @@
     })
   }
   // add and start commandpal
-  new CommandPal({
+  const cmd = new CommandPal({
     commands: commands,
     hotkey: trigger,
     hotkeysGlobal: trigger_in_input,
@@ -175,6 +205,19 @@
     displayShortcutSymbols: true,
     shortcutOpenPalette: false,
     id: 'shortlet-command-pal',
-  }).start()
+  })
+  cmd.subscribe('exec', () => {
+    updateShortletDataAttributes(page_shortlets)
+  })
+  cmd.start()
   window.commandPalIgnoreBlur = dev_mode
-})()
+
+  return {
+    run: actions => {
+      if (typeof actions === 'string') actions = shortlets_list.filter(s => s.id == actions)[0].actions
+      runShortlet({ actions })
+    },
+  }
+})().then(esposed => {
+  window.Shortlet = esposed
+})

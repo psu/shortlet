@@ -45,27 +45,16 @@ function style(tabId, style) {
   return chrome.scripting.insertCSS({ target: { tabId: tabId }, ...obj })
 }
 
-// dynamic load scripts
+// //dynamic load of index.js
 // chrome.tabs.onUpdated.addListener(async (tabId, info) => {
 //   const tab = await chrome.tabs.get(tabId)
 //   if (typeof tab.url === 'undefined' || tab.url.includes('localhost')) return undefined
 //   if (info.status === 'complete') {
-//     const is_loaded = await exec(
-//       tabId,
-//       () =>
-//         typeof MiniQueue === 'function' &&
-//         typeof ShortletAPI === 'object' &&
-//         typeof Shortlet === 'object' &&
-//         typeof CommandPal === 'function'
-//     )
+//     console.log('complete')
+//     const is_loaded = await exec(tabId, () => typeof CommandPal === 'function')
 //     if (!is_loaded[0].result) {
-//       await exec(tabId, [
-//         'shortlet/MiniQueue.js',
-//         'shortlet/ShortletAPI.js',
-//         'shortlet/shortlet.js',
-//         'command-pal/CommandPal.js',
-//       ])
-//       await style(tabId, ['command-pal/theme-dark.css', 'shortlet/command-pal.css'])
+//       await exec(tabId, ['src/index.js'])
+//       //      await style(tabId, ['command-pal/theme-dark.css', 'shortlet/command-pal.css'])
 //     }
 //   }
 // })

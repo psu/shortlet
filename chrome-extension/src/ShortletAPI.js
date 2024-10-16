@@ -1,79 +1,44 @@
 const ShortletAPI = (() => {
-  function selectOne(s) {
-    return document.querySelector(s)
+  //
+  function selectOne(selector, match = undefined, in_view = false, from_point = false) {
+    return selectAll(selector, match, in_view, from_point)[0]
   }
-  function selectAll(s) {
-    return Object.entries(document.querySelectorAll(s)).map(o => o[1])
+  //
+  function selectAll(selector, match = undefined, in_view = false, from_point = false) {
+    const els = [...document.querySelectorAll(selector)]
+    const els_filt = els
+      .filter(el => typeof match !== 'string' || matchInnerText(el, match))
+      .filter(el => !in_view || inViewport(el))
+      .filter(el => !from_point || isElementFromPoint(el))
+    // console.log(els)
+    // console.log('matchInnerText(el, match)', matchInnerText(els[0], match))
+    // console.log('inViewport(el)', in_view, inViewport(els[0]))
+    // console.log('isElementFromPoint(el)', from_point, isElementFromPoint(els[0]))
+    // console.log(filt)
+    return els_filt
   }
-  function selectOneWithText(s, t) {
-    let elements = selectAll(s).filter(el => matchInnerText(el, t))
-    if (elements.length == 0) throw new Error('Shortlet: No elements found')
-    if (elements.length > 1) elements = elements.filter(async el => (await isInViewPort(el)) && isElementFromPoint(el))
-    if (elements.length > 1) throw new Error(`Shortlet: Too many elements found (${elements.length})`)
-    return elements[0]
+  function matchInnerText(el, value) {
+    value = value.toLowerCase().trim()
+    const text = el.innerText.toLowerCase().trim()
+    const hit = text.match(new RegExp(value))
+    return !el.innerHTML.startsWith('<') && text && value && hit !== null
   }
-  function selectAllWithText(s, t) {
-    return selectAll(s).filter(el => matchInnerText(el, t))
-  }
-  function matchInnerText(el, t) {
-    return el.innerText.toLowerCase().trim().match(t.toLowerCase().trim()) !== null
-  }
-  function isInViewPort(element) {
-    return new Promise((resolve, reject) => {
-      const observer = new IntersectionObserver(entries => {
-        resolve(entries[0].isIntersecting)
-      })
-      observer.observe(element)
-      setTimeout(() => {
-        observer.unobserve(element)
-        observer.disconnect()
-      }, 10)
-    })
-  }
-  function getCSSRecursive(el, prop) {
-    const ignore_list = ['auto', 'none', 'inherit', 'initial', 'revert', 'unset']
-    if (el.tagName === 'BODY') {
-      const o = document.createElement('div')
-      o[prop] = 0
-      return o
-    } //throw new Error(`Shortlet: No parent have an explicit value set for '${prop}'`)
-    const style = getComputedStyle(el)
-    if (!ignore_list.includes(style[prop])) {
-      return el
-    } else {
-      return getCSSRecursive(el.parentElement, prop)
-    }
-  }
-  function reduceOnHighestCSS(el_list, prop) {
-    if (el_list.length < 2) return el_list
-    return el_list.reduce((el_acc, el) => {
-      const el_ancestor_value = getComputedStyle(getCSSRecursive(el, prop))[prop]
-      const el_acc_ancestor_value = getComputedStyle(getCSSRecursive(el_acc, prop))[prop]
-      return el_acc_ancestor_value > el_ancestor_value ? el_acc : el
-    })
-  }
-  function getFrontmost(el_list) {
-    reduceOnHighestCSS(el_list, 'zIndex')
-  }
+  //
   function isElementFromPoint(el) {
     const el_rect = el.getBoundingClientRect()
     try {
       const el_p = document.elementFromPoint(el_rect.left + el_rect.width / 2, el_rect.top + el_rect.height / 2)
       return el_p.isSameNode(el)
     } catch (e) {
-      //if (dev_mode) console.log('Shortlet: No element from point.', el_rect)
-      return false
+      return undefined
     }
   }
-  // isCSSVisible - recursive function checking element and it's parents for
-  // getComputedStyle(document.querySelector('.sc-eBHJIF.gcQAcw').parentElement).display ==="none" (not "none" doesn't mean it is visible…)
-  function clickIt(el_list) {
-    if (!Array.isArray(el_list)) el_list = [el_list]
-    if (el_list.length > 0) el_list.forEach(el => el.click())
-    else throw new Error('Shortlet: No elements found')
+  function inViewport(el) {
+    return el.dataset.shortlets_viewport === 'true'
   }
-  function blur(o) {
-    if (selectOne(':focus') !== null) selectOne(':focus').blur()
+  function unFocus() {
+    const focus = document.querySelector(':focus')
+    if (focus) focus.blur()
   }
   // const setValue = (el, text) => {
   //   Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(el, text)
@@ -103,17 +68,6 @@ const ShortletAPI = (() => {
   function callSetProperty(el, attr, value) {
     Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, attr).set.call(el, value)
   }
-  function runMe(me) {
-    if (typeof me === 'string') {
-      return _runShortlet(getShortlets()[me])
-    }
-    if (typeof me !== 'undefined') {
-      if (!Array.isArray(me)) me = [me]
-      const queue = new MiniQueue()
-      me.forEach(a => queueAction(queue, a))
-      queue.start()
-    }
-  }
 
   // this is the Shortlet API ↓
   return {
@@ -127,80 +81,68 @@ const ShortletAPI = (() => {
     forward: o => {
       history.forward()
     },
+    log_all: o => {
+      console.log('Shortlet.log_all', selectAll(o.on, o.match))
+    },
     click: o => {
-      if (typeof o.text === 'string') {
-        clickIt(selectOneWithText(o.on, o.text))
-      } else {
-        clickIt(selectOne(o.on))
-      }
+      selectOne(o.on, o.match, o.in === 'view').click()
     },
     click_all: o => {
-      if (typeof o.text === 'string') clickIt(selectAllWithText(o.on, o.text))
-      else clickIt(selectAll(o.on))
-    },
-    click_first: o => {
-      if (typeof o.text === 'string') clickIt(selectAllWithText(o.on, o.text).slice(0, 1))
-      else clickIt(selectAll(o.on).slice(0, 1))
-    },
-    click_front: o => {
-      let el_list
-      if (typeof o.text === 'string') el_list = selectAllWithText(o.on, o.text)
-      else el_list = selectAll(o.on)
-      clickIt(reduceOnHighestCSS(el_list))
+      selectAll(o.on, o.match).forEach(el => el.click())
     },
     blur: () => {
-      blur()
+      unFocus()
     },
     focus: o => {
-      blur()
-      selectOne(o.on).focus()
+      unFocus()
+      selectOne(o.on, o.match).focus()
     },
     select: o => {
-      selectOne(o.on).select()
+      selectOne(o.on, o.match).select()
     },
     add_class: o => {
-      selectAll(o.on).forEach(el => el.classList.add(...o.class.split(' ')))
+      selectAll(o.on, o.match).forEach(el => el.classList.add(...o.class.split(' ')))
     },
     remove_class: o => {
-      selectAll(o.on).forEach(el => el.classList.remove(...o.class.split(' ')))
+      selectAll(o.on, o.match).forEach(el => el.classList.remove(...o.class.split(' ')))
     },
     toggle_class: o => {
-      selectAll(o.on).forEach(el => el.classList.toggle(...o.class.split(' ')))
+      selectAll(o.on, o.match).forEach(el => el.classList.toggle(...o.class.split(' ')))
     },
-    add_style: o => {
-      const style = document.createElement('style')
-      style.textContent = o.text
-      document.head.appendChild(style)
+    add_style_tag: o => {
+      const s = document.createElement('style')
+      s.textContent = o.text
+      document.head.appendChild(s)
     },
     show: o => {
-      if (typeof o.type !== 'string') o.type = 'block'
-      selectAll(o.on).forEach(el => (el.style.display = o.type))
+      o.type = o.type || 'block'
+      selectAll(o.on, o.match).forEach(el => (el.style.display = o.type))
     },
     hide: o => {
-      selectAll(o.on).forEach(el => (el.style.display = 'none'))
+      selectAll(o.on, o.match).forEach(el => (el.style.display = 'none'))
     },
     toggle: o => {
-      if (typeof o.type !== 'string') o.type = 'block'
-      selectAll(o.on).forEach(el => {
+      o.type = o.type || 'block'
+      selectAll(o.on, o.match).forEach(el => {
         if (el.style.display === 'none') el.style.display = o.type
         else el.style.display = 'none'
       })
     },
     input: o => {
-      setInput(selectOne(o.on), 'value', o.text)
+      setInput(selectOne(o.on, o.match), 'value', o.text)
     },
     html_attribute: o => {
-      selectAll(o.on).forEach(el => callSetProperty(el, o.attribute, o.value))
+      selectAll(o.on, o.match).forEach(el => callSetProperty(el, o.attribute, o.value))
     },
     check: o => {
-      selectAll(o.on).forEach(el => setChecked(el, o.value))
+      selectAll(o.on, o.match).forEach(el => setChecked(el, o.value))
     },
     copy: o => {
-      navigator.clipboard.writeText(selectOne(o.on).innerText.trim())
+      navigator.clipboard.writeText(selectOne(o.on, o.match).innerText.trim())
     },
     copy_all: o => {
       navigator.clipboard.writeText(
-        selectAll(o.on)
+        selectAll(o.on, o.match)
           .map(el => el.innerText.trim())
           .join('\n')
       )
@@ -209,7 +151,7 @@ const ShortletAPI = (() => {
       window.location = `javascript:(function(){${o.script}})();`
     },
     duplicate: o => {
-      selectAll(o.on).forEach(el => {
+      selectAll(o.on, o.match).forEach(el => {
         const n = el.cloneNode(true)
         el.after(n)
         n.id = o.id
@@ -217,24 +159,21 @@ const ShortletAPI = (() => {
     },
     set_attr: o => {
       o.attribute = o.attribute || o.attr
-      selectAll(o.on).forEach(el => el.setAttribute(o.attribute, o.value))
+      selectAll(o.on, o.match).forEach(el => el.setAttribute(o.attribute, o.value))
     },
     set_text: o => {
-      selectAll(o.on).forEach(el => (el.innerText = o.text))
+      selectAll(o.on, o.match).forEach(el => (el.innerText = o.text))
     },
     style: o => {
       o.property = o.property || o.prop
-      selectAll(o.on).forEach(el => (el.style[o.property] = o.value))
+      selectAll(o.on, o.match).forEach(el => (el.style[o.property] = o.value))
     },
     add_event: o => {
-      selectAll(o.on).forEach(el =>
+      selectAll(o.on, o.match).forEach(el =>
         el.addEventListener(o.event, () => {
-          runMe(o.actions)
+          Shortlet.run(o.actions)
         })
       )
-    },
-    run: o => {
-      runMe(o.shortlet || o.actions)
     },
     // not updated ↓
 
@@ -244,7 +183,7 @@ const ShortletAPI = (() => {
       // and append it as a span to the child element 'target' (could be set to "*")
       // with the inline style 'style'
       o.style = typeof o.style !== 'undefined' ? o.style : 'padding:2px 5px'
-      selectAll(o.on).forEach(el => {
+      selectAll(o.on, o.match).forEach(el => {
         const out_el = document.createElement('span')
         const target = o.target !== 'undefined' ? el.querySelector(o.target) : el
         out_el.textContent = el.dataset[o.data]
@@ -253,7 +192,7 @@ const ShortletAPI = (() => {
       })
     },
     tooltip: o => {
-      selectAll(o.on).forEach(el => {
+      selectAll(o.on, o.match).forEach(el => {
         const rect = el.getBoundingClientRect()
         const out = document.createElement('span')
         out.textContent = o.text
@@ -267,13 +206,12 @@ const ShortletAPI = (() => {
       // find target or matching input field and paste
       // using react change event
       o.join = typeof o.join !== 'undefined' ? o.join : ' '
-      selectAll(o.on).forEach(el => {
+      selectAll(o.on, o.match).forEach(async el => {
         const groups = el.innerText.match(new RegExp(o.text))
         if (groups) {
           groups.shift()
           const output = groups.join(o.join)
-          const target = selectOne('#' + el.getAttribute('for'))
-          console.log(target)
+          const target = await selectOne('#' + el.getAttribute('for'))
           Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(target, output)
           target.dispatchEvent(new Event('input', { bubbles: true }))
         }
@@ -281,7 +219,7 @@ const ShortletAPI = (() => {
     },
     highlight: o => {},
     keyboard: o => {
-      const el = typeof o.on === 'string' ? selectOne(o.on) : window
+      const el = typeof o.on === 'string' ? selectOne(o.on, o.match) : window
       dispatchKeyboardEvent(el, o.key, o.event, o.options)
     },
     dispatch_enter: o => {
