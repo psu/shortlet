@@ -38,7 +38,7 @@ const ShortletAPI = (() => {
   }
   function unFocus() {
     const focus = document.querySelector(':focus')
-    if (focus) focus.blur()
+    if (focus) dispatchEvent(focus, 'blur')
   }
   // const setValue = (el, text) => {
   //   Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(el, text)
@@ -70,6 +70,10 @@ const ShortletAPI = (() => {
     Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, attr).set.call(el, value)
   }
 
+  function repeat(n, fn, o) {
+    for (let i = 0; i < n; i++) fn(o)
+  }
+
   // this is the Shortlet API ↓
   return {
     wait: o => {}, // o should include the property "delay" in ms, anyway it is cleaner to include a "delay" property in the _upcoming_ action
@@ -84,13 +88,25 @@ const ShortletAPI = (() => {
       history.forward()
     },
     log_all: o => {
-      console.log('Shortlet.log_all', selectAll(o.on, o.match))
+      repeat(
+        o.repeat,
+        o => {
+          console.log('Shortlet.log_all', selectAll(o.on, o.match))
+        },
+        o
+      )
     },
     click: o => {
+      dispatchEvent(selectOne(o.on, o.match, o.in === 'view'), 'click')
+    },
+    click_plain: o => {
       selectOne(o.on, o.match, o.in === 'view').click()
     },
     click_all: o => {
-      selectAll(o.on, o.match).forEach(el => el.click())
+      selectAll(o.on, o.match, o.in === 'view').forEach(el => dispatchEvent(el, 'click'))
+    },
+    click_all_plain: o => {
+      selectAll(o.on, o.match, o.in === 'view').forEach(el => el.click())
     },
     click_num: o => {},
     blur: () => {
@@ -98,9 +114,12 @@ const ShortletAPI = (() => {
     },
     focus: o => {
       unFocus()
-      selectOne(o.on, o.match).focus()
+      dispatchEvent(selectOne(o.on, o.match, o.in === 'view'), 'focus')
     },
     select: o => {
+      dispatchEvent(selectOne(o.on, o.match, o.in === 'view'), 'select')
+    },
+    select_plain: o => {
       selectOne(o.on, o.match).select()
     },
     add_class: o => {
@@ -187,7 +206,7 @@ const ShortletAPI = (() => {
       o.property = o.property || o.prop
       selectAll(o.on, o.match).forEach(el => (el.style[o.property] = o.value))
     },
-    event: o => {
+    dispatch: o => {
       dispatchEvent(selectOne(o.on, o.match), o.event)
     },
     add_event: o => {
