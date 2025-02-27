@@ -48,6 +48,7 @@ const ShortletAPI = (() => {
     callSetProperty(el, attr, value)
     dispatchKeyboardEvent(el, 'keydown')
     dispatchEvent(el, 'input')
+    dispatchEvent(el, 'mousedown')
   }
   const setChecked = (el, value = undefined) => {
     if (typeof value !== 'string') value = 'checked'
@@ -71,14 +72,15 @@ const ShortletAPI = (() => {
 
   // this is the Shortlet API ↓
   return {
+    wait: o => {}, // o should include the property "delay" in ms, anyway it is cleaner to include a "delay" property in the _upcoming_ action
     goto: o => {
       if (o.append === true) window.location += o.url
       else window.location = o.url
     },
-    back: o => {
+    goto_back: o => {
       history.back()
     },
-    forward: o => {
+    goto_forward: o => {
       history.forward()
     },
     log_all: o => {
@@ -90,6 +92,7 @@ const ShortletAPI = (() => {
     click_all: o => {
       selectAll(o.on, o.match).forEach(el => el.click())
     },
+    click_num: o => {},
     blur: () => {
       unFocus()
     },
@@ -128,11 +131,27 @@ const ShortletAPI = (() => {
         else el.style.display = 'none'
       })
     },
+    input_plain: o => {
+      o.value = o.value || o.text
+      selectAll(o.on, o.match).forEach(el => (el.value = o.value))
+    },
     input: o => {
-      setInput(selectOne(o.on, o.match), 'value', o.text)
+      o.value = o.value || o.text
+      setInput(selectOne(o.on, o.match), 'value', o.value)
     },
     html_attribute: o => {
       selectAll(o.on, o.match).forEach(el => callSetProperty(el, o.attribute, o.value))
+    },
+    scroll_by: o => {
+      const el = selectOne(o.on, o.match)
+      o.top = o.top || el.clientHeight
+      o.left = o.left || 0
+      el.scrollBy(o.left, o.top)
+    },
+    scroll_to: o => {
+      o.top = o.top || 0
+      o.left = o.left || 0
+      selectOne(o.on, o.match).scrollTo(o.left, o.top)
     },
     check: o => {
       selectAll(o.on, o.match).forEach(el => setChecked(el, o.value))
@@ -167,6 +186,9 @@ const ShortletAPI = (() => {
     style: o => {
       o.property = o.property || o.prop
       selectAll(o.on, o.match).forEach(el => (el.style[o.property] = o.value))
+    },
+    event: o => {
+      dispatchEvent(selectOne(o.on, o.match), o.event)
     },
     add_event: o => {
       selectAll(o.on, o.match).forEach(el =>
