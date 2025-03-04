@@ -6,14 +6,14 @@
   const dev_mode = await callServiceWorker({ action: 'get_storage', key: 'dev_mode' })
   // get shortlets for the current webpage
   function getShortlets() {
-    return shortlets_list.shortlets.filter(s => window.location.href.match(s.conditions.url) != null)
+    return shortlets_list.shortlets.filter(s => window.location.href.match(s.conditions.url) !== null)
   }
   // intra-extension communication
-  function callServiceWorker(message) {
+  function callServiceWorker(msg) {
     return new Promise((resolve, reject) => {
-      chrome.runtime.sendMessage(message, response => {
-        if (response.error) reject(response.error)
-        resolve(response.data)
+      chrome.runtime.sendMessage(msg, res => {
+        if (res.error) reject(res.error)
+        resolve(res.data)
       })
     })
   }
@@ -74,19 +74,17 @@
   //
   function parseShortletsForCommandPal(shlts) {
     if (!Array.isArray(shlts)) shlts = [shlts]
-    if (shlts.length > 0) {
-      return shlts
-        .filter(s => s.title)
-        .map(s => ({
-          name: s.title,
-          description: s.description || `Executes ${s.actions.length} actions`,
-          shortcut: s.shortcut,
-          handler: () => {
-            runShortlet(s)
-          },
-        }))
-    }
-    return []
+    if (shlts.length == 0) return []
+    return shlts
+      .filter(s => s.title)
+      .map(s => ({
+        name: s.title,
+        description: s.description || `Executes ${s.actions.length} actions`,
+        shortcut: s.shortcut,
+        handler: () => {
+          runShortlet(s)
+        },
+      }))
   }
   //
   function extractActionsFromShortlets(shlts) {
@@ -105,10 +103,11 @@
   //
   async function updateShortletDataAttributes(shlts) {
     let actions = extractActionsFromShortlets(shlts)
-    actions = [...actions, ...extractFallbacksFromActions(actions)].filter(a => a && a.in && a.in == 'view').flat()
+    actions = [...actions, ...extractFallbacksFromActions(actions)].filter(a => a && typeof a.if === 'string' && a.if.match(/view/i) !== null).flat()
     const els = [...actions.map(a => [...document.querySelectorAll(a.on)])].flat()
     // filter doesn't work with promises so two steps are needed https://stackoverflow.com/questions/47095019/how-to-use-array-prototype-filter-with-async
     const els_viewport = await Promise.all(els.map(observeInViewPort))
+    if (dev_mode) console.log(els_viewport)
     els.forEach((el, index) => {
       el.setAttribute('data-shortlets_viewport', els_viewport[index])
     })
@@ -122,6 +121,7 @@
       observer.observe(el)
       setTimeout(() => {
         observer.unobserve(el)
+        // console.log(`Unobserving element: ${el.innerText} (was: ${el.dataset.shortlets_viewport})`)
         observer.disconnect()
       }, 10)
     })
@@ -140,14 +140,7 @@
         },
       },
       {
-        name: 'Load ShortletAPI.js',
-        description: 'into this world…',
-        handler: () => {
-          callServiceWorker({ action: 'load_api' })
-        },
-      },
-      {
-        name: 'Highlight Shortlets',
+        name: 'Highlight all Shortlets',
         handler: () => {
           if (dev_mode) console.log('====== Highlight start ======')
           const highlight_actions = page_shortlets
@@ -185,6 +178,13 @@
       name: 'Developer Tools »',
       children: [
         {
+          name: 'Load ShortletAPI.js',
+          description: 'into this world…',
+          handler: () => {
+            callServiceWorker({ action: 'load_api' })
+          },
+        },
+        {
           name: "Toggle 'Ignore Blur'",
           handler: () => {
             window.commandPalIgnoreBlur = typeof window.commandPalIgnoreBlur === 'undefined' ? false : !window.commandPalIgnoreBlur
@@ -196,7 +196,7 @@
   // add and start commandpal
   const cmd = new CommandPal({
     commands: commands,
-    hotkey: trigger,
+    hotkey: trigger || 'ctrl+space',
     hotkeysGlobal: trigger_in_input,
     debugOutput: dev_mode,
     placeholder: ' ',
@@ -218,6 +218,6 @@
       runShortlet({ actions })
     },
   }
-})().then(esposed => {
-  window.Shortlet = esposed
+})().then(expo => {
+  window.Shortlet = expo
 })

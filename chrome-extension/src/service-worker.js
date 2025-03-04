@@ -32,7 +32,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 })
 
 chrome.action.onClicked.addListener(tab => {
-  console.log('click from tab', tab)
+  chrome.runtime.openOptionsPage()
 })
 
 function exec(tabId, script, args = []) {
