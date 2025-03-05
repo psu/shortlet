@@ -1,5 +1,9 @@
 # Shortlet
 
-Hack the DOM
+**Tinker with Websites**
 
-![Shortlet icon](img/icon.png)
+Shortlet is a framework to configure and launch commands and hacks for the web. You can:
+
+- Create keyboard shortcuts
+- Do multiple actions with one click
+- Ease your daily tasks

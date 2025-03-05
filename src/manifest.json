@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "version": "0.9",
   "name": "Shortlet - Tinker with Websites",
-  "description": "Shortlet is a framework and launcher to tinker with the websites you are browsing.",
+  "description": "Shortlet is a framework to configure and launch commands and hacks for the web.",
   "action": {
     "default_icon": {
       "256": "icon.png"
@@ -22,7 +22,7 @@
       ],
       "css": [
         "command-pal/theme-dark.css",
-        "shortlet/command-pal-theme.css",
+        "command-pal/theme-shortlet.css",
         "shortlet/actions.css"
       ],
       "js": [

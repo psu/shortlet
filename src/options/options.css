@@ -12,6 +12,7 @@ textarea {
 }
 header {
   margin-bottom: 2em;
+  margin-left: 120px;
 }
 h1 {
   font-size: 3.5em;
@@ -28,11 +29,12 @@ h1::after {
   display: block;
   position: absolute;
   content: ' ';
-  background-image: url(../img/icon.png);
+  background-image: url(../icon.png);
   background-size: 100px;
   width: 100px;
   height: 100px;
-  left: 835px;
+  left: 20px;
+  text-align: right;
   top: 1em;
 }
 main {
