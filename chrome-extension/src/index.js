@@ -107,7 +107,6 @@
     const els = [...actions.map(a => [...document.querySelectorAll(a.on)])].flat()
     // filter doesn't work with promises so two steps are needed https://stackoverflow.com/questions/47095019/how-to-use-array-prototype-filter-with-async
     const els_viewport = await Promise.all(els.map(observeInViewPort))
-    if (dev_mode) console.log(els_viewport)
     els.forEach((el, index) => {
       el.setAttribute('data-shortlets_viewport', els_viewport[index])
     })
