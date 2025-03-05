@@ -4,27 +4,30 @@ const ShortletAPI = (() => {
   // filter by the regex o.text and by o.if: "view" (inViewport) and "front" (isFrontmost)
   //
   function el(o) {
+    // mandatory
     if (typeof o.on !== 'string') return []
+    // defaults
     if (typeof o.on !== 'string') o.on = undefined
     if (typeof o.if !== 'string') o.if = ''
     if (typeof o.for !== 'string') o.for = 'first'
     try {
+      // select and filter elements
       let elms = Array.from(document.querySelectorAll(o.on))
       if (o.text) elms = elms.filter(e => matchInnerText(e, o.text))
       if (o.if.match(/view/i) !== null) elms = elms.filter(e => inViewport(e))
       if (o.if.match(/front/i) !== null) elms = elms.filter(e => isFrontmost(e))
       if (o.for === 'random') return elms.slice((r = rand(1, elms.length)), r - 1)
+      // return elements based on o.for
       return elms.slice(slice_map[o.for].start, slice_map[o.for].end)
     } catch (err) {
       console.log(`Shortlet el() error: \n`, err)
     }
   }
-  //
+  // helpers to filter elements
   function matchInnerText(elem, text) {
     const inner_text = elem.innerText.toLowerCase().trim()
     return inner_text !== '' && inner_text.match(new RegExp(text.toLowerCase().trim())) !== null
   }
-  //
   function isFrontmost(elem) {
     try {
       const rect = elem.getBoundingClientRect()
@@ -33,10 +36,10 @@ const ShortletAPI = (() => {
       return true
     }
   }
-  //
   function inViewport(e) {
     return e.dataset.shortlets_viewport === 'true'
   }
+  // utils
   const slice_map = {
     first: { start: 0, end: 1 },
     last: { start: -1 },
@@ -45,11 +48,10 @@ const ShortletAPI = (() => {
     but_last: { start: 0, end: -1 },
     but_first: { start: 1 },
   }
-  //
   function rand(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min)
   }
-  //
+  // helper functions for the actions
   function dispatchEvent(elem, event, options = { bubbles: true }) {
     elem.dispatchEvent(new Event(event, options))
   }
@@ -60,7 +62,6 @@ const ShortletAPI = (() => {
   function setInputProperty(elem, attr, value) {
     Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, attr).set.call(elem, value)
   }
-
   function unFocus() {
     const has_focus = document.querySelector(':focus')
     if (has_focus) has_focus.blur()
@@ -82,7 +83,6 @@ const ShortletAPI = (() => {
     if (target) elem.querySelector(target).append(span)
     else elem.after(span)
   }
-
   // return the Shortlet API
   return {
     // script control and utils
