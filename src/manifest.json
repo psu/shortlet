@@ -1,42 +1,42 @@
 {
   "manifest_version": 3,
   "version": "0.9",
-  "name": "Shortlet",
+  "name": "Shortlet - Tinker with Websites",
   "description": "Shortlet is a framework and launcher to tinker with the websites you are browsing.",
   "action": {
     "default_icon": {
-      "256": "./img/icon.png"
+      "256": "icon.png"
     },
-    "default_title": "Shortlet"
+    "default_title": "Shortlet - Tinker with Websites"
+  },
+  "icons": {
+    "256": "icon.png"
   },
   "background": {
-    "service_worker": "src/service-worker.js"
+    "service_worker": "shortlet/service-worker.js"
   },
   "content_scripts": [
     {
       "matches": [
         "<all_urls>"
       ],
-      "exclude_matches": [
-        "*://sub.example.com/*"
-      ],
       "css": [
-        "src/shortlet.css",
         "command-pal/theme-dark.css",
-        "src/command-pal.css"
+        "shortlet/command-pal-theme.css",
+        "shortlet/actions.css"
       ],
       "js": [
-        "src/MiniQueue.js",
-        "src/ShortletAPI.js",
+        "shortlet/MiniQueue.js",
+        "shortlet/ShortletAPI.js",
         "command-pal/CommandPal.js",
-        "src/index.js"
+        "shortlet/Shortlet.js"
       ],
       "run_at": "document_idle",
       "match_about_blank": true
     }
   ],
   "options_ui": {
-    "page": "src/options.html",
+    "page": "options/index.html",
     "open_in_tab": true
   },
   "permissions": [

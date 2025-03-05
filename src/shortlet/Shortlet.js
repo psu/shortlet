@@ -130,7 +130,7 @@
   const commands = parseShortletsForCommandPal(page_shortlets)
   // system commands
   commands.push({
-    name: 'Shortlet »',
+    name: 'Settings…',
     children: [
       {
         name: 'Open extension options',
@@ -174,7 +174,7 @@
   // dev commands
   if (dev_mode) {
     commands.push({
-      name: 'Developer Tools »',
+      name: 'Developer Tools…',
       children: [
         {
           name: 'Load ShortletAPI.js',
@@ -192,7 +192,7 @@
       ],
     })
   }
-  // add and start commandpal
+  // add and start command-pal
   const cmd = new CommandPal({
     commands: commands,
     hotkey: trigger || 'ctrl+space',

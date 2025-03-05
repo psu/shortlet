@@ -1,0 +1,107 @@
+* {
+  font-size: 14px;
+  font-family: Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+body {
+  padding: 2em;
+}
+body,
+input,
+textarea {
+  background-color: rgb(248, 244, 248);
+}
+header {
+  margin-bottom: 2em;
+}
+h1 {
+  font-size: 3.5em;
+  margin-bottom: 0;
+}
+.tagline {
+  font-size: 1.8em;
+  font-weight: 500;
+  margin: 0.5em 0 1em;
+  font-style: italic;
+  font-family: Courier, monospace;
+}
+h1::after {
+  display: block;
+  position: absolute;
+  content: ' ';
+  background-image: url(../img/icon.png);
+  background-size: 100px;
+  width: 100px;
+  height: 100px;
+  left: 835px;
+  top: 1em;
+}
+main {
+  border-radius: 10px;
+  background-color: rgb(240, 236, 239);
+  border: 1px solid rgb(207, 204, 208);
+  display: block;
+  padding: 20px;
+  max-width: 900px;
+}
+main h2 {
+  margin: 0 0 0.8em;
+  font-size: 1.6em;
+  font-weight: 600;
+}
+label,
+.advanced {
+  display: block;
+  margin-bottom: 2em;
+  font-weight: 500;
+}
+.advanced {
+  margin-bottom: 1em;
+}
+button {
+  width: 160px;
+  height: 2em;
+  font-weight: 900;
+}
+input[type='text'] {
+  width: 100px;
+  height: 1.4em;
+  font-weight: 800;
+  color: rgba(0, 0, 0, 0.8);
+  font-family: monospace;
+  font-size: 0.9em;
+}
+button,
+input[type='text'],
+textarea {
+  display: block;
+  margin-top: 0.3em;
+  border: 1px solid gray;
+  border-radius: 4px;
+  padding: 3px 6px;
+}
+textarea {
+  font-size: 0.9em;
+  width: 800px;
+  max-width: 90%;
+  height: 500px;
+  font-family: monospace;
+}
+label:has(input[type='checkbox']) {
+  font-weight: normal;
+}
+.version {
+  margin-bottom: 1.6em;
+  color: gray;
+}
+p {
+  line-height: 1.2em;
+  margin-top: 0.75em;
+  margin-bottom: 0;
+}
+li {
+  margin-bottom: 0.25em;
+}
+header p,
+header li {
+  font-size: 1.1em;
+}

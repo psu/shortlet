@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shortlet - Tinker with Websites</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Shortlet</h1>
+      <div class="tagline">Tinker with Websites</div>
+      <!-- <p>A (framework | launcher | multi-tool | mindset | extension | language/vocabulary ) to tinker with websites.</p> -->
+      <p>Shortlet is a framework and launcher to tinker with the websites you are browsing.</p>
+      <p>It is an easy way to create, save and reuse the small hacks you create for the web.</p>
+      <p>
+        What you can do:
+        <ul>
+          <li>Create keyboard shortcuts</li>
+          <li>Do multiple actions with one click</li>
+          <li>Smoothen your daily tasks</li>
+        </ul>
+      </p>
+    </header>
+    <main>
+      <h2>Options</h2>
+      <label>
+        Shortcut to trigger the command palette
+        <input type="text" id="trigger" />
+      </label>
+      <label>
+        Shortlets
+        <textarea id="shortlet_json"></textarea>
+      </label>
+      <div class="advanced">Advanced options</div>
+      <label>
+        <input type="checkbox" id="trigger_in_input" />
+        Command palette trigger and keyboard shortcuts works when editing a &lt;textarea&gt;, &lt;input&gt; or &lt;select&gt;
+      </label>
+      <label>
+        <input type="checkbox" id="dev_mode" />
+        Developer mode: Add 'Developer tools' and activate logging
+      </label>
+      <button id="save">Save</button>
+      <div class="version">version 0.9</div>
+    </main>
+
+    <script src="options.js"></script>
+  </body>
+</html>
