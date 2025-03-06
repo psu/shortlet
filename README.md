@@ -28,3 +28,7 @@ Click the extension icon to open settings. Default values should be `ctrl+space`
 ### service-worker.js
 
 ## ShortletAPI
+
+# Previous art
+Nothing exists in vaccum. Shortlet is built on ideas from the Shortkeys browser extension. The Alfred app has been an inspiration for the command pallet interface. 
+- 
