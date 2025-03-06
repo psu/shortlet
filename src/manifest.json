@@ -29,7 +29,7 @@
         "shortlet/MiniQueue.js",
         "shortlet/ShortletAPI.js",
         "command-pal/CommandPal.js",
-        "shortlet/Shortlet.js"
+        "shortlet/inject.js"
       ],
       "run_at": "document_idle",
       "match_about_blank": true

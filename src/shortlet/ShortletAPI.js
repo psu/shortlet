@@ -55,7 +55,7 @@ const ShortletAPI = (() => {
   function dispatchEvent(elem, event, options = { bubbles: true }) {
     elem.dispatchEvent(new Event(event, options))
   }
-  function dispatchKeyboardEvent(elem, event = 'keydown', key, options = { bubbles: true }) {
+  function dispatchKeyboardEvent(elem, event = 'keydown', key = 'Space', options = { bubbles: true }) {
     options.key = key
     elem.dispatchEvent(new KeyboardEvent(event, options)) // options {metaKey: true} (shiftKey, ctrlKey, altKey)
   }
@@ -209,8 +209,9 @@ const ShortletAPI = (() => {
       el(o).forEach(e => dispatchEvent(e, o.event, o.options))
     },
     keypress: o => {
-      const elms = o.on ? el(o) : [window]
-      elms.forEach(e => dispatchKeyboardEvent(e, o.event || 'keypress', o.key, o.options))
+      let elms = el(o)
+      if (elms.length === 0) elms = [window]
+      elms.forEach(e => dispatchKeyboardEvent(e, o.event || 'keydown', o.key, o.options))
     },
     listen: o => {
       el(o).forEach(e =>
@@ -230,10 +231,10 @@ const ShortletAPI = (() => {
 
     // spcial actions
     input_from: o => {
-      const match = el[0]({ ...o, on: o.from }).innerText.match(new RegExp(o.on || '.*'))
+      const match = el({ ...o, on: o.from })[0].innerText.match(new RegExp(o.on || '.*'))
       if (match === null) return
       const output = match.length == 1 ? match[0] : match.shift().join(o.join || ' ')
-      setInput(el[0]({ ...o, on: o.on || o.to }), 'value', output)
+      setInput(el({ ...o, on: o.on || o.to })[0], 'value', output)
     },
     // not updated ↓
 

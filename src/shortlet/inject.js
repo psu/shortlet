@@ -195,7 +195,7 @@
   // add and start command-pal
   const cmd = new CommandPal({
     commands: commands,
-    hotkey: trigger || 'ctrl+space',
+    hotkey: trigger,
     hotkeysGlobal: trigger_in_input,
     debugOutput: dev_mode,
     placeholder: ' ',
