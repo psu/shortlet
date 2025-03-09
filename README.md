@@ -28,7 +28,7 @@ Other properties include _title_, _keyboard shortcut_, and _repeat_.
 ## Actions
 
 ### Syntax
-Each action is written as a JSON object with some of the following key-value pairs: 
+Each action is written as a JSON object with the following key-value pairs: 
 
 #### Common
 
@@ -38,7 +38,7 @@ Each action is written as a JSON object with some of the following key-value pai
 
 #### Optional filters
 
-- `"text": "regex"` Filters the list of elements by the value of their property `innerText`.
+- `"text": "regex"` Filters the list of elements by the value of their property _innerText_.
 - `"if": "in view|frontmost"` Filters the list of elements by one/both of "in view" and "frontmost". Useful to avoid manipulating elements not currently visible. 
 - `"for": "first|last|each|but_last|but_first|random"` Makes a selection from the remaining list of elements. 
 
@@ -56,7 +56,7 @@ Each action is written as a JSON object with some of the following key-value pai
 
 
 
-## Documentation of Shorlet's components
+## Building blocks
 
 ### ShortletAPI
 
@@ -64,11 +64,11 @@ Exposes the shortlet actions described in the section _Actions_. In addition, th
 
 ### MiniQueue
 
-Allows you to setup and run a list of actions, one at a time. Support for queuing, start and delay between steps. 
+Allows you to setup and run a list of actions, one at a time. Supports queuing, start and delay between steps. 
 
 ### CommandPal
 
-A slightly modified copy of this project. 
+A slightly modified copy of the [command-pal](https://github.com/benwinding/command-pal) project. 
 
 ### inject.js
 
