@@ -23,40 +23,41 @@ An _action_ is a predefined piece of code that are run with a set of defined inp
 
 A _condition_ needs to be met for a shortlet to be available. Currently, only URL conditions are supported. 
 
-Other properties include _title_, _keyboard shortcut_, and _repeat_.
+Other properties include _id_, _title_, _shortcut_, and _repeat_.
 
 ## Actions
 
 ### Syntax
 Each action is written as a JSON object with the following key-value pairs: 
 
-#### Common
+#### Common properties
 
 - `"do": "action code"` Mandatory. 
 - `"on": "selector"` Almost always needed. Defines the list of elements to apply the action to. Optionally filtered by _text_, _if_, or _for_.
 - `"delay": milliseconds` Wait the given time **before** starting the action. 
 
-#### Optional filters
+#### Optional filter properties
 
 - `"text": "regex"` Filters the list of elements by the value of their property _innerText_.
 - `"if": "in view|frontmost"` Filters the list of elements by one/both of "in view" and "frontmost". Useful to avoid manipulating elements not currently visible. 
 - `"for": "first|last|each|but_last|but_first|random"` Makes a selection from the remaining list of elements. 
 
-#### Depending on action
-- `class`
-- `style`
-- `attribute`
-- `event`
-- `id`
-- `key`
-- `as`
-
+#### Properties depending on action
+See the list of actions below for details about the additional properties: `class`, `id`, `style`, `data`, `attribute`, `property`, `event`, `key`, `as`.
 
 ### List of Actions
 
+## Settings
 
+### Trigger shortcut
 
-## Building blocks
+### Shortlets
+
+### Advanced settings
+
+### command-pal Theme
+
+## Code building blocks
 
 ### ShortletAPI
 
@@ -68,15 +69,26 @@ Allows you to setup and run a list of actions, one at a time. Supports queuing, 
 
 ### CommandPal
 
-A slightly modified copy of the [command-pal](https://github.com/benwinding/command-pal) project. 
+A slightly modified copy of the [command-pal project](https://github.com/benwinding/command-pal).
 
 ### inject.js
 
-The main injection script that bootstraps Shortlet by fetching the shortlets from settings and loading them into CommandPal. Also keeps track of elements in/out of the viewport when needed. 
+The main injection script that bootstraps Shortlet by fetching the shortlets from settings and loading them into CommandPal. Also, when needed, keeps track of elements inside and outside of the viewport. 
 
 ### service-worker.js
 
-The Chrome extension backend, handling local storage and open the settings page. 
+The extension backend, handling local storage and open the settings page. 
 
-# Previous art
-Nothing exists in vaccum. Shortlet is built on ideas from the Shortkeys browser extension. Alfred app has been an inspiration for the command palette interface. 
+### settings.html/.js/.css
+
+Extension settings HTML/CSS and persistence. 
+
+# You scrolled all the way down!
+
+## Previous art
+Nothing exists in vaccum. Shortlet is built from ideas I got when using the brilliant [Shortkeys browser extension](https://github.com/crittermike/shortkeys). [Alfred app](https://alfredapp.com) has been an inspiration for the command palette interface. 
+
+## Guiding principles 
+- Use natural language. 
+- Queues are cool. 
+- Premature optimization is immature.
