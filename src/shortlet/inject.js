@@ -130,7 +130,7 @@
   const commands = parseShortletsForCommandPal(page_shortlets)
   // system commands
   commands.push({
-    name: 'Settings…',
+    name: '⚙️ Settings…',
     children: [
       {
         name: 'Open extension options',
@@ -174,7 +174,7 @@
   // dev commands
   if (dev_mode) {
     commands.push({
-      name: 'Developer Tools…',
+      name: '🛠️ Developer Tools…',
       children: [
         {
           name: 'Load ShortletAPI.js',
@@ -198,7 +198,7 @@
     hotkey: trigger,
     hotkeysGlobal: trigger_in_input,
     debugOutput: dev_mode,
-    placeholder: ' ',
+    placeholder: 'Search for shortlets…',
     emptyResultText: 'No Shortlets',
     hideButton: true,
     displayShortcutSymbols: true,

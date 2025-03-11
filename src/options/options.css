@@ -8,7 +8,7 @@ body {
 body,
 input,
 textarea {
-  background-color: rgb(248, 244, 248);
+  background-color: #ffffff;
 }
 header {
   margin-bottom: 2em;
@@ -39,8 +39,8 @@ h1::after {
 }
 main {
   border-radius: 10px;
-  background-color: rgb(240, 236, 239);
-  border: 1px solid rgb(207, 204, 208);
+  background-color: #fdfdfd;
+  border: 1px solid #e0e0e0;
   display: block;
   padding: 20px;
   max-width: 900px;

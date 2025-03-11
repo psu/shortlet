@@ -17,8 +17,9 @@ const ShortletAPI = (() => {
       if (o.if.match(/view/i) !== null) elms = elms.filter(e => inViewport(e))
       if (o.if.match(/front/i) !== null) elms = elms.filter(e => isFrontmost(e))
       if (o.for === 'random') return elms.slice((r = rand(1, elms.length)), r - 1)
-      // return elements based on o.for
-      return elms.slice(slice_map[o.for].start, slice_map[o.for].end)
+      elms = elms.slice(slice_map[o.for].start, slice_map[o.for].end)
+      if (elms.length === 0) throw new Error(`No elements found for: `, o.on)
+      return elms
     } catch (err) {
       console.log(`Shortlet el() error: \n`, err)
     }
@@ -228,16 +229,14 @@ const ShortletAPI = (() => {
       o.attribute = o.attribute || o.attr
       el(o).forEach(e => addSpan(e, e.getAttribute(o.attribute) || '', o.target, o.style))
     },
-
     // spcial actions
     input_from: o => {
-      const match = el({ ...o, on: o.from })[0].innerText.match(new RegExp(o.on || '.*'))
-      if (match === null) return
-      const output = match.length == 1 ? match[0] : match.shift().join(o.join || ' ')
-      setInput(el({ ...o, on: o.on || o.to })[0], 'value', output)
+      el({ ...o, on: o.from }).forEach(e => {
+        const match = e.innerText.match(new RegExp(o.match || '.*'))
+        if (match === null) return
+        el({ ...o, on: o.to || o.on }).forEach(e => setInput(e, 'value', match.length === 1 ? match[0] : match.slice(1).join(o.join || ' ')))
+      })
     },
-    // not updated ↓
-
     tooltip: o => {
       el(o).forEach(e => {
         const rect = e.getBoundingClientRect()
@@ -246,22 +245,6 @@ const ShortletAPI = (() => {
         out.classList.add('shortlet-tooltip')
         out.setAttribute('style', `left:${rect.left}px;top:${rect.top - 15}px;${o.style || ''}`)
         document.body.append(out)
-      })
-    },
-    copy_paste_label: o => {
-      // get value(s) from selector with regex
-      // find target or matching input field and paste
-      // using react change event
-      o.join = typeof o.join !== 'undefined' ? o.join : ' '
-      el(o).forEach(async e => {
-        const groups = e.innerText.match(new RegExp(o.on))
-        if (groups) {
-          groups.shift()
-          const output = groups.join(o.join)
-          const target = await el1('#' + e.getAttribute('for'))
-          Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(target, output)
-          target.dispatchEvent(new Event('input', { bubbles: true }))
-        }
       })
     },
   }
