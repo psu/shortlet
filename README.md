@@ -30,22 +30,138 @@ Other properties include _id_, _title_, _shortcut_, and _repeat_.
 ### Syntax
 Each action is written as a JSON object with the following key-value pairs: 
 
-#### Common properties
+#### Mandatory properties
 
-- `"do": "action code"` Mandatory. 
-- `"on": "selector"` Almost always needed. Defines the list of elements to apply the action to. Optionally filtered by _text_, _if_, or _for_.
+- `"do": "action code"` What action to run. Mandatory. 
+
+#### Element selection properties
+
+- `"on": "selector"` Almost always needed. Defines the list of elements to apply the action to by running querySelectorAll with the provided selector, then filter by _text_, _if_, and _for_.
+- `"text": "regex"` Filters the selected list of elements by the value of their property _innerText_.
+- `"if": "in view|frontmost"` Filters the list of selected elements by one/both of "in view" and "frontmost". Useful to avoid manipulating elements not currently visible. 
+- `"for": "**first**|last|each|but_last|but_first|random"` Applied last, selecting elements based on position in the remaining list. 
+
+#### Optional properties
 - `"delay": milliseconds` Wait the given time **before** starting the action. 
 
-#### Optional filter properties
-
-- `"text": "regex"` Filters the list of elements by the value of their property _innerText_.
-- `"if": "in view|frontmost"` Filters the list of elements by one/both of "in view" and "frontmost". Useful to avoid manipulating elements not currently visible. 
-- `"for": "first|last|each|but_last|but_first|random"` Makes a selection from the remaining list of elements. 
-
 #### Properties depending on action
-See the list of actions below for details about the additional properties: `class`, `id`, `style`, `data`, `attribute`, `property`, `event`, `key`, `as`.
+See the list of actions below for details about the additional properties: `value`, `class`, `id`, `style`, `css`, `data`, `attribute`, `property`, `event`, `key`, `as`, `history`, `url`, `append`,
 
 ### List of Actions
+These properties are applicable to all actions and described above: `on`, `text`, `if`, `for`, and `delay`.
+
+#### Script control and Utilities 
+- **wait:** Wait `delay: 123` milliseconds.
+- **log:** Add selected elements to console.log. 
+- **highlight:** Not yet implemented. 
+
+#### Browser interaction
+- **goto:** Navigate to an `url` or `history: back|forward`. Set `append: true` to not append the location with `url` rather than replace.
+
+#### Webpage interaction
+- **click:** Click on the selected elements `times` number of times. 
+- **scroll:** Scroll either to the selected elements or to a fixed postition `top: y`, `left: x`.
+
+#### Element interaction
+- **blur:** Remove focus from all elements. 
+- **focus:** Focus the selected elements. 
+- **select:** Select the selected elements. 
+- **copy:** Copy the selected elements' _innerText_ to the clipboard, joined by `divider: **\n**`
+
+#### Element visibility
+    
+- **show:** Show the selected elements `as: **block**` 
+- **hide:** Hide the selected elements 
+- **toggle:** Toggle visibility for the selected elements. Use `as` when shown. 
+
+#### Element styling
+- **style:**  o => {
+      el(o).forEach(e => (e.style[o.property] = o.value))
+    },
+    add_class: o => {
+      el(o).forEach(e => e.classList.add(...o.class.split(' ')))
+    },
+    remove_class: o => {
+      el(o).forEach(e => e.classList.remove(...o.class.split(' ')))
+    },
+    toggle_class: o => {
+      el(o).forEach(e => e.classList.toggle(...o.class.split(' ')))
+    },
+    stylesheet: o => {
+      const s = document.createElement('style')
+      s.textContent = o.css
+      document.head.appendChild(s)
+    },
+    // forms
+    input: o => {
+      el(o).forEach(e => {
+        if (o.use && o.use === 'plain') {
+          e.value = o.value
+        } else {
+          setInput(e, 'value', o.value)
+          if (o.key) dispatchKeyboardEvent(e, 'keydown', o.key)
+        }
+      })
+    },
+    check: o => {
+      el(o).forEach(e => setChecked(e, o.value))
+    },
+    // dom manipulation
+    write: this.set_text,
+    set_text: o => {
+      el(o).forEach(e => (e.innerText = o.text))
+    },
+    duplicate: o => {
+      el(o).forEach(old => {
+        const dup = old.cloneNode(true)
+        old.after(dup)
+        dup.id = o.id
+      })
+    },
+    set: this.set_attribute,
+    set_attribute: o => {
+      o.attribute = o.attribute || o.attr
+      el(o).forEach(e => e.setAttribute(o.attribute, o.value))
+    },
+    // event stuff
+    dispatch: this.trigger,
+    trigger: o => {
+      el(o).forEach(e => dispatchEvent(e, o.event, o.options))
+    },
+    keypress: o => {
+      let elms = el(o)
+      if (elms.length === 0) elms = [window]
+      elms.forEach(e => dispatchKeyboardEvent(e, o.event || 'keydown', o.key, o.options))
+    },
+    listen: o => {
+      el(o).forEach(e =>
+        e.addEventListener(o.for, () => {
+          Shortlet.run(o.actions)
+        })
+      )
+    },
+    reveal_data: o => {
+      el(o).forEach(e => addSpan(e, e.dataset[o.data] || '', o.target, o.style))
+    },
+    reveal: this.reveal_attribute,
+    reveal_attribute: o => {
+      o.attribute = o.attribute || o.attr
+      el(o).forEach(e => addSpan(e, e.getAttribute(o.attribute) || '', o.target, o.style))
+    },
+    // spcial actions
+    input_from: o => {
+      el({ ...o, on: o.from }).forEach(e => {
+        const match = e.innerText.match(new RegExp(o.match || '.*'))
+        if (match === null) return
+        el({ ...o, on: o.to || o.on }).forEach(e => setInput(e, 'value', match.length === 1 ? match[0] : match.slice(1).join(o.join || ' ')))
+      })
+    },
+    tooltip: Not yet implemented 
+
+
+
+
+
 
 ## Settings
 
