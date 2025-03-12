@@ -50,7 +50,7 @@ Each action is written as a JSON object with the following key-value pairs:
 - `"for": "FIRST|last|each|but_last|but_first|random"` Applied last, selecting elements based on position in the remaining list. 
 
 #### Optional properties
-- `"delay": milliseconds` Wait the given time **before** starting the action. 
+- `"delay": 123` Wait the given amount of milliseconds **before** running the action. 
 
 #### Properties depending on action
 See the list of actions below. 
@@ -70,7 +70,7 @@ Most actions require one or several elements to be selected, see _Element select
 
 ### Webpage interaction
 - **click:** Click on the selected elements `"times": 2` number of times. 
-- **scroll:** Scroll either to the selected elements or to a fixed postition `"top": y`, `"left": x`.
+- **scroll:** Scroll either to the selected element, or to the fixed postition `"top": y`, `"left": x`.
 
 ### Element interaction
 - **blur:** Remove focus from all elements. 
@@ -80,28 +80,18 @@ Most actions require one or several elements to be selected, see _Element select
 
 ### Element visibility
     
-- **show:** Show the selected elements `"as": "BLOCK|flex|inline|..."`.
-- **hide:** Hide the selected elements ".
-- **toggle:** Toggle visibility for the selected elements. Use `"as": "BLOCK|flex|inline|..."` when showing. 
+- **show:** Show the selected elements by setting _display_ to `"as": "BLOCK|flex|inline|..."`.
+- **hide:** Hide the selected elements.
+- **toggle:** Toggle visibility for the selected elements. Visible is achieved by setting _display_ to `"as": "BLOCK|flex|inline|..."`. 
 
 ### Element styling
 
 - **style:** Set the selected elements style `"property": "color"` to `"value": "#f9c"`.
+- **add_class:** Add a list of space separated `"class": "one two"` to the selected elements. 
+- **remove_class:**  Remove the given list of space separated `"class": "one two"` from the selected elements.
+- **toggle_class:** Toggle a list of space separated `"class": "one two"` on the selected elements.
+- **stylesheet:** Add the given `"css": "code"` to the page in a _style_ tag. 
 
-    add_class: o => {
-      el(o).forEach(e => e.classList.add(...o.class.split(' ')))
-    },
-    remove_class: o => {
-      el(o).forEach(e => e.classList.remove(...o.class.split(' ')))
-    },
-    toggle_class: o => {
-      el(o).forEach(e => e.classList.toggle(...o.class.split(' ')))
-    },
-    stylesheet: o => {
-      const s = document.createElement('style')
-      s.textContent = o.css
-      document.head.appendChild(s)
-    },
     // forms
     input: o => {
       el(o).forEach(e => {
