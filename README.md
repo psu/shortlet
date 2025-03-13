@@ -6,7 +6,7 @@ Shortlet is a framework to configure and launch small hacks for the web. You can
 
 - Create keyboard shortcuts
 - Multiple actions with one click
-- Simple DOM manipulation without coding
+- Webpage manipulation without coding
 
 Shortlet comes as a Chrome extension, providing automatic webpage injection and a simple settings UI.
 
@@ -18,6 +18,10 @@ Shortlet comes as a Chrome extension, providing automatic webpage injection and 
 2. Open Shortlet settings by clicking on the extension icon, or trigger the Shortlet command palette with the default shortcut `ctrl+space`.
 3. Add your first shortlet and save the settings. 
 4. Navigate to, or reload, the webpage and launch the shortlet. 
+
+---
+
+## Examples 
 
 ---
 
@@ -58,25 +62,24 @@ See the list of actions below.
 ---
 
 ## List of Actions
+
 Most actions require one or several elements to be selected, see _Element selection properties_ above. 
 
 ### Script control and Utilities 
 - **wait:** Wait `"delay": 123` milliseconds.
 - **log:** Add selected elements to console.log. 
-- **highlight:** Not yet implemented. 
+- **highlight:** Not yet implemented..
 
 ### Browser interaction
 - **goto:** Navigate to an `"url": "https://"` or `"history": "back|forward"`. Set `"append": true` to append the url to location instead of  replace.
-
-### Webpage interaction
-- **click:** Click on the selected elements `"times": 2` number of times. 
 - **scroll:** Scroll either to the selected element, or to the fixed postition `"top": y`, `"left": x`.
 
 ### Element interaction
+- **click:** Click on the selected elements `"times": 2` number of times..
 - **blur:** Remove focus from all elements. 
 - **focus:** Focus the selected elements. 
 - **select:** Select the selected elements. 
-- **copy:** Copy the selected elements' _innerText_ to the clipboard, joined by `"divider": "\n"`
+- **copy:** Copy the selected elements' _innerText_ to the clipboard, joined by `"divider": "\n"`..
 
 ### Element visibility
     
@@ -84,7 +87,7 @@ Most actions require one or several elements to be selected, see _Element select
 - **hide:** Hide the selected elements.
 - **toggle:** Toggle visibility for the selected elements. Visible is achieved by setting _display_ to `"as": "BLOCK|flex|inline|..."`. 
 
-### Element styling
+### Styling
 
 - **style:** Set the selected elements style `"property": "color"` to `"value": "#f9c"`.
 - **add_class:** Add a list of space separated `"class": "one two"` to the selected elements. 
@@ -92,20 +95,13 @@ Most actions require one or several elements to be selected, see _Element select
 - **toggle_class:** Toggle a list of space separated `"class": "one two"` on the selected elements.
 - **stylesheet:** Add the given `"css": "code"` to the page in a _style_ tag. 
 
-    // forms
-    input: o => {
-      el(o).forEach(e => {
-        if (o.use && o.use === 'plain') {
-          e.value = o.value
-        } else {
-          setInput(e, 'value', o.value)
-          if (o.key) dispatchKeyboardEvent(e, 'keydown', o.key)
-        }
-      })
-    },
-    check: o => {
-      el(o).forEach(e => setChecked(e, o.value))
-    },
+### Form interaction
+
+- **input:** Input a `"value": "text"` into the selected element. Changing the value can be followed by a _keydown_ event with `"key"; "code"`. The value is set by sending events that will trigger data-binding code. With `"use": "plain"` the value is simply assigned.  
+- **check:** Set the selected checkbox elements to `"value": "checked"`. Assign an empty value to _uncheck_. The value is set by sending events that will trigger data-binding code. With `"use": "plain"` the value is simply assigned..
+
+ 
+        
     // dom manipulation
     write: this.set_text,
     set_text: o => {
