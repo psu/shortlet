@@ -8,7 +8,7 @@ Shortlet is a framework to configure and launch small hacks for the web. You can
 - Multiple actions with one click
 - Webpage manipulation without coding
 
-Shortlet comes as a Chrome extension, providing automatic webpage injection and a simple settings UI.
+Shortlet comes as a Chrome extension, providing automatic webpage injection, a command palette and a settings UI.
 
 ---
 
@@ -27,13 +27,13 @@ Shortlet comes as a Chrome extension, providing automatic webpage injection and 
 
 ## Details
 
-A _shortlet_ is a custom command. You configure it with the details needed to perform a small hack on a webpage. Each shortlet contains a list of actions, conditions and other properties. Shortlets are run by the launcher.
+A _shortlet_ is a custom command. You configure it to perform the hack you desire. Each shortlet contains one or more actions, conditions and other properties. Shortlets are run from the command palette aka. the launcher.
 
-An _action_ is a predefined piece of code that are run with a set of defined input values. There are actions of different types, but most of them does something in the DOM. 
+An _action_ is a predefined piece of code that is performed when you run the shortlet. It has a set of defined input values. There are different types of actions, most of them does something with the DOM. 
 
-A _condition_ needs to be met for a shortlet to be available. Currently, only URL conditions are supported. 
+_Conditions_ decide if a shortlet should be available for a certain webpage. Currently, only URL conditions are supported. 
 
-Other shortlet properties include _id_, _title_, _shortcut_, and _repeat_.
+Other shortlet properties are _id_, _title_, _shortcut_, and _repeat_.
 
 ---
 
