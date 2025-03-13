@@ -75,11 +75,13 @@ Most actions require one or several elements to be selected, see _Element select
 - **scroll:** Scroll either to the selected element, or to the fixed postition `"top": y`, `"left": x`.
 
 ### Element interaction
+
 - **click:** Click on the selected elements `"times": 2` number of times..
 - **blur:** Remove focus from all elements. 
 - **focus:** Focus the selected elements. 
 - **select:** Select the selected elements. 
 - **copy:** Copy the selected elements' _innerText_ to the clipboard, joined by `"divider": "\n"`..
+- **set_text:** (alias: write) Set the _innerText_ of the selected elements to `"value": "text"`..
 
 ### Element visibility
     
@@ -100,20 +102,11 @@ Most actions require one or several elements to be selected, see _Element select
 - **input:** Input a `"value": "text"` into the selected element. Changing the value can be followed by a _keydown_ event with `"key"; "code"`. The value is set by sending events that will trigger data-binding code. With `"use": "plain"` the value is simply assigned.  
 - **check:** Set the selected checkbox elements to `"value": "checked"`. Assign an empty value to _uncheck_. The value is set by sending events that will trigger data-binding code. With `"use": "plain"` the value is simply assigned..
 
- 
         
     // dom manipulation
-    write: this.set_text,
-    set_text: o => {
-      el(o).forEach(e => (e.innerText = o.text))
-    },
-    duplicate: o => {
-      el(o).forEach(old => {
-        const dup = old.cloneNode(true)
-        old.after(dup)
-        dup.id = o.id
-      })
-    },
+ 
+- **duplicate:** Clone the selected elements and add them after them themselves and append the id with `"id": "-code"`..
+
     set: this.set_attribute,
     set_attribute: o => {
       o.attribute = o.attribute || o.attr
