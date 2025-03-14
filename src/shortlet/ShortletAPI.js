@@ -1,8 +1,8 @@
 const ShortletAPI = (() => {
   // internal helper functions
+  //
   // select the elements matching the selector o.on
   // filter by the regex o.text and by o.if: "view" (inViewport) and "front" (isFrontmost)
-  //
   function el(o) {
     // mandatory
     if (typeof o.on !== 'string') return []
@@ -81,8 +81,14 @@ const ShortletAPI = (() => {
     const span = document.createElement('span')
     span.textContent = text
     span.setAttribute('style', style)
-    if (target) elem.querySelector(target).append(span)
-    else elem.after(span)
+    const out = elem.querySelector(target) || elem.parentElement.parentElement || elem.parentElement
+    out.append(span)
+  }
+  function textMatchJoin(source, pattern, delimiter = '') {
+    const match = source.match(new RegExp(pattern || '.*'))
+    if (match === null) return ''
+    if (match.length === 1) return match[0]
+    return match.slice(1).join(delimiter)
   }
   // return the Shortlet API
   return {
@@ -143,10 +149,15 @@ const ShortletAPI = (() => {
     // visibility etc.
     show: o => {
       o.as = o.as || 'block'
-      el(o).forEach(e => (e.style.display = o.as))
+      el(o).forEach(e => {
+        e.style.display = o.as
+        e.style.opacity = 1
+      })
     },
     hide: o => {
-      el(o).forEach(e => (e.style.display = 'none'))
+      el(o).forEach(e => {
+        e.style.display = 'none'
+      })
     },
     toggle: o => {
       o.as = o.as || 'block'
@@ -222,19 +233,18 @@ const ShortletAPI = (() => {
       )
     },
     reveal_data: o => {
-      el(o).forEach(e => addSpan(e, e.dataset[o.data] || '', o.target, o.style))
+      el(o).forEach(e => addSpan(e, textMatchJoin(e.dataset[o.data], o.match, o.delimiter), o.target, o.style))
     },
     reveal: this.reveal_attribute,
     reveal_attribute: o => {
       o.attribute = o.attribute || o.attr
-      el(o).forEach(e => addSpan(e, e.getAttribute(o.attribute) || '', o.target, o.style))
+      el(o).forEach(e => addSpan(e, textMatchJoin(e.getAttribute(o.attribute), o.match, o.delimiter), o.target, o.style))
     },
     // spcial actions
     input_from: o => {
-      el({ ...o, on: o.from }).forEach(e => {
-        const match = e.innerText.match(new RegExp(o.match || '.*'))
-        if (match === null) return
-        el({ ...o, on: o.to || o.on }).forEach(e => setInput(e, 'value', match.length === 1 ? match[0] : match.slice(1).join(o.join || ' ')))
+      el({ ...o, on: o.from || o.on }).forEach(from => {
+        const text = textMatchJoin(from.innerText, o.match, o.delimiter)
+        el({ ...o, on: o.to }).forEach(to => setInput(to, 'value', text))
       })
     },
     tooltip: o => {
