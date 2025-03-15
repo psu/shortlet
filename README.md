@@ -1,4 +1,4 @@
-# Shortlet
+i # Shortlet
 
 **Tinker with Websites**
 
@@ -101,6 +101,10 @@ Most actions require one or several elements to be selected, see _Element select
 - **set_text** (alias: write) Change the _innerText_ of the selected elements:
   - `on/test/if/for`
   - `"value": "text"`
+- **set_attribute** (alias: set) Change the selected elements HTML attribute:
+  - `on/test/if/for`
+  - `"attribute": "alt"`
+  - `"value": "text"`
 
 ### Element visibility
 
@@ -137,54 +141,67 @@ Most actions require one or several elements to be selected, see _Element select
 - **input** Input a value into the selected elements. By default, trying to trigger data-binding code. Alternatively use simple assignment:
   - `on/test/if/for`
   - `"value": "text"`
-  - `"use": "ADVANCED|simple"`
+  - `"use": "ADVANCED|simple"`..
 - **check** Change the selected checkbox elements. By default, trying to trigger data-binding code. Alternatively use simple assignment:
   - `on/test/if/for`
   - `"value": TRUE|false`..
-- **duplicate** Clone the selected elements and add new after them themselves. Optionally.. append the new elements id with a code:
-  - `on/test/if/for`
-  - `"id": "-code"`
-- **set_attribute** (alias: set) Change the selected elements HTML attribute:
-  - `on/test/if/for`
-  - `"attribute": "alt"`
-  - `"value": "text"`
+- **input_from** Add the selected elements matching _innerText_ to the selected inputs. 
+  - `test/if/for`
+  - `"from": "selector"`
+  - `"match": "regex"`
+  - `"to": "selector"`
+
+### Events
+
 - **dispatch** (alias: trigger, keypress, mouse) Trigger an event on the selected elements:
   - `on/test/if/for`
   - `"event": "KEYDOWN|click|mousedown|input|..."`
   - `"options": "{ bubbles: true, cancelable: true, view: window }"`
-  - `"key": "SPACE|Enter|s"` -**listen** Add an event listener to the selected elements and run the shortlet's actions when it is triggered:
+  - `"key": "SPACE|Enter|s"` 
+- **listen** Add an event listener to the selected elements and run the shortlet's actions when it is triggered:
   - `on/test/if/for`
   - `"event": "click|keydown|..."`..
-  - `"actions": [{action}, {action}]`
-    reveal_data: o => {
-    el(o).forEach(e => addSpan(e, e.dataset[o.data] || '', o.target, o.style))
-    },
-    reveal: this.reveal_attribute,
-    reveal_attribute: o => {
-    o.attribute = o.attribute || o.attr
-    el(o).forEach(e => addSpan(e, e.getAttribute(o.attribute) || '', o.target, o.style))
-    },
-    // spcial actions
-    input_from: o => {
-    el({ ...o, on: o.from }).forEach(e => {
-    const match = e.innerText.match(new RegExp(o.match || '.\*'))
-    if (match === null) return
-    el({ ...o, on: o.to || o.on }).forEach(e => setInput(e, 'value', match.length === 1 ? match[0] : match.slice(1).join(o.join || ' ')))
-    })
-    },
-    tooltip: Not yet implemented
+  - `"actions": [{action1}, {action2}]`
+
+### Create elements 
+
+- **duplicate** Clone the selected elements and add new after them themselves. Optionally.. append the new elements id with a code:
+  - `on/test/if/for`
+  - `"id": "-code"`
+- **reveal_data** Create span elements with the matching text from the selected elements dataset attribute. Optionally style the span and define a target _parent_ for the span: 
+  - `on/test/if/for`
+  - `"data": "dataSetNameCamelCase"`
+  - `"match": "regex"`
+  - `"target": "PARENT|selector"`
+  - `"style": "inline style"`
+- **reveal_attribute** (alias: reveal) Create span elements with the matching text from the selected elements html attribute. Optionally style the span and define a target _parent_ for the span: 
+  - `on/test/if/for`
+  - `"attribute": "name"`
+  - `"match": "regex"`
+  - `"target": "PARENT|selector"`
+  - `"style": "inline style"`
+- **tooltip** Not yet implemented.
+
+
+    
 
 ---
 
 ## Settings
 
-### Trigger shortcut
+### Command palette shortcut..
+Keyboard shortcut to show the shortlet launcher command palette. List of available keys..
 
 ### Shortlets
+The JSON object where you define your shortlets. 
 
 ### Advanced settings
 
+- **Trigger in input, textarea:** If keyboard shortcuts should be triggered within input elements. 
+- **Show dev tools:** Activates logging. 
+
 ### command-pal Theme
+Not yet implemented 
 
 ---
 
