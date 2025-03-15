@@ -53,12 +53,24 @@ const ShortletAPI = (() => {
     return Math.floor(Math.random() * (max - min + 1) + min)
   }
   // helper functions for the actions
-  function dispatchEvent(elem, event, options = { bubbles: true }) {
-    elem.dispatchEvent(new Event(event, options))
+  function dispatchEvent(elem, event, options = {}) {
+    options = { bubbles: true, cancelable: true, view: window, key: 'Space', ...options }
+    let ev
+    if (event.match(/mouse|click/i) !== null) {
+      ev = new MouseEvent(event, options)
+    } else if (event.match(/key/i) !== null) {
+      ev = new KeyboardEvent(event, options)
+    } else {
+      ev = new Event(event, options)
+    }
+    elem.dispatchEvent(ev)
   }
-  function dispatchKeyboardEvent(elem, event = 'keydown', key = 'Space', options = { bubbles: true }) {
+  function ispatchKeyboardEvent(elem, event = 'keydown', key = 'Space', options = { bubbles: true, cancelable: true, view: window }) {
     options.key = key
-    elem.dispatchEvent(new KeyboardEvent(event, options)) // options {metaKey: true} (shiftKey, ctrlKey, altKey)
+    elem.ispatchEvent(new KeyboardEvent(event, options)) // options {metaKey: true} (shiftKey, ctrlKey, altKey)
+  }
+  function ispatchMouseEvent(elem, event = 'click', options = { bubbles: true, cancelable: true, view: window }) {
+    elem.ispatchEvent(new MouseEvent(event, options))
   }
   function setInputProperty(elem, attr, value) {
     Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, attr).set.call(elem, value)
@@ -69,7 +81,7 @@ const ShortletAPI = (() => {
   }
   function setInput(elem, attr, value) {
     setInputProperty(elem, attr, value)
-    dispatchKeyboardEvent(elem, 'keydown')
+    dispatchEvent(elem, 'keydown', { key: 'Space' })
     dispatchEvent(elem, 'input')
     dispatchEvent(elem, 'mousedown')
   }
@@ -90,172 +102,115 @@ const ShortletAPI = (() => {
     if (match.length === 1) return match[0]
     return match.slice(1).join(delimiter)
   }
-  // return the Shortlet API
-  return {
-    // script control and utils
-    wait: o => {
-      // o.delay
-    },
-    log: o => {
-      el(o).forEach(e => console.log('Shortlet.log: ', e))
-    },
-    highlight: o => {},
-    // navigation
-    goto: o => {
-      if (typeof o.history === 'string') {
-        if (o.history === 'back') history.back()
-        if (o.history === 'forward') history.forward()
-      }
-      if (typeof o.url === 'string') {
-        if (o.append === true) window.location += o.url
-        else window.location = o.url
-      }
-    },
-    // interaction
-    click: o => {
-      el(o).forEach(e => e.click())
-    },
-    double_click: o => {
-      //el(o).forEach(e => e.click())
-    },
-    scroll_by: o => {
-      const e = el(o)[0]
-      o.top = o.top || e.clientHeight
-      o.left = o.left || 0
-      e.scrollBy(o.left, o.top)
-    },
-    scroll_to: o => {
-      o.top = o.top || 0
-      o.left = o.left || 0
-      el(o)[0].scrollTo(o.left, o.top)
-    },
-    blur: () => {
-      unFocus()
-    },
-    focus: o => {
-      unFocus()
-      el(o).forEach(e => e.focus())
-    },
-    select: o => {
-      el(o).forEach(e => e.select())
-    },
-    copy: o => {
-      navigator.clipboard.writeText(
-        el(o)
-          .map(e => e.innerText.trim())
-          .join('\n')
-      )
-    },
-    // visibility etc.
-    show: o => {
-      o.as = o.as || 'block'
-      el(o).forEach(e => {
-        e.style.display = o.as
-        e.style.opacity = 1
-      })
-    },
-    hide: o => {
-      el(o).forEach(e => {
-        e.style.display = 'none'
-      })
-    },
-    toggle: o => {
-      o.as = o.as || 'block'
-      el(o).forEach(e => {
-        if (e.style.display === 'none') e.style.display = o.as
-        else e.style.display = 'none'
-      })
-    },
-    // css
-    style: o => {
-      el(o).forEach(e => (e.style[o.property] = o.value))
-    },
-    add_class: o => {
-      el(o).forEach(e => e.classList.add(...o.class.split(' ')))
-    },
-    remove_class: o => {
-      el(o).forEach(e => e.classList.remove(...o.class.split(' ')))
-    },
-    toggle_class: o => {
-      el(o).forEach(e => e.classList.toggle(...o.class.split(' ')))
-    },
-    stylesheet: o => {
-      const s = document.createElement('style')
-      s.textContent = o.css
-      document.head.appendChild(s)
-    },
-    // forms
-    input: o => {
-      el(o).forEach(e => {
-        if (o.use && o.use === 'plain') {
-          e.value = o.value
-        } else {
-          setInput(e, 'value', o.value)
-          if (o.key) dispatchKeyboardEvent(e, 'keydown', o.key)
-        }
-      })
-    },
-    check: o => {
-      el(o).forEach(e => setChecked(e, o.value))
-    },
-    // dom manipulation
-    write: this.set_text,
-    set_text: o => {
-      el(o).forEach(e => (e.innerText = o.text))
-    },
-    duplicate: o => {
-      el(o).forEach(old => {
-        const dup = old.cloneNode(true)
-        old.after(dup)
-        dup.id = o.id
-      })
-    },
-    set: this.set_attribute,
-    set_attribute: o => {
-      o.attribute = o.attribute || o.attr
-      el(o).forEach(e => e.setAttribute(o.attribute, o.value))
-    },
-    // event stuff
-    dispatch: this.trigger,
-    trigger: o => {
-      el(o).forEach(e => dispatchEvent(e, o.event, o.options))
-    },
-    keypress: o => {
-      let elms = el(o)
-      if (elms.length === 0) elms = [window]
-      elms.forEach(e => dispatchKeyboardEvent(e, o.event || 'keydown', o.key, o.options))
-    },
-    listen: o => {
-      el(o).forEach(e =>
-        e.addEventListener(o.for, () => {
-          Shortlet.run(o.actions)
-        })
-      )
-    },
-    reveal_data: o => {
-      el(o).forEach(e => addSpan(e, textMatchJoin(e.dataset[o.data], o.match, o.delimiter), o.target, o.style))
-    },
-    reveal: this.reveal_attribute,
-    reveal_attribute: o => {
-      o.attribute = o.attribute || o.attr
-      el(o).forEach(e => addSpan(e, textMatchJoin(e.getAttribute(o.attribute), o.match, o.delimiter), o.target, o.style))
-    },
-    // spcial actions
-    input_from: o => {
-      el({ ...o, on: o.from || o.on }).forEach(from => {
-        const text = textMatchJoin(from.innerText, o.match, o.delimiter)
-        el({ ...o, on: o.to }).forEach(to => setInput(to, 'value', text))
-      })
-    },
-    tooltip: o => {
-      el(o).forEach(e => {
-        const rect = e.getBoundingClientRect()
-        const out = document.createElement('span')
-        out.textContent = o.value
-        out.classList.add('shortlet-tooltip')
-        out.setAttribute('style', `left:${rect.left}px;top:${rect.top - 15}px;${o.style || ''}`)
-        document.body.append(out)
-      })
-    },
+  // define Shortlet API
+  const _ = {}
+  _.wait = o => {} // o.delay
+  _.log = o => el(o).forEach(e => console.log('Shortlet.log: ', e))
+  _.highlight = o => {}
+  _.goto = o => {
+    if (typeof o.history === 'string') {
+      if (o.history === 'back') history.back()
+      if (o.history === 'forward') history.forward()
+    }
+    if (typeof o.url === 'string') {
+      if (o.append === true) window.location += o.url
+      else window.location = o.url
+    }
   }
+  _.click = o => el(o).forEach(e => e.click())
+  _.scroll_by = o => {
+    const e = el(o)[0]
+    o.top = o.top || e.clientHeight
+    o.left = o.left || 0
+    e.scrollBy(o.left, o.top)
+  }
+  _.scroll_to = o => el(o)[0].scrollTo(o.left || 0, o.top || 0)
+  _.blur = () => unFocus()
+  _.focus = o => {
+    unFocus()
+    el(o).forEach(e => e.focus())
+  }
+  _.select = o => el(o).forEach(e => e.select())
+  _.copy = o =>
+    navigator.clipboard.writeText(
+      el(o)
+        .map(e => e.innerText.trim())
+        .join(o.delimiter || '\n')
+    )
+
+  _.show = o =>
+    el(o).forEach(e => {
+      e.style.display = o.as || 'block'
+      e.style.opacity = 1
+    })
+  _.hide = o => el(o).forEach(e => (e.style.display = 'none'))
+  _.toggle = o =>
+    el(o).forEach(e => {
+      if (e.style.display === 'none') e.style.display = o.as || 'block'
+      else e.style.display = 'none'
+    })
+  _.style = o => el(o).forEach(e => (e.style[o.property] = o.value))
+  _.add_class = o => el(o).forEach(e => e.classList.add(...o.class.split(' ')))
+  _.remove_class = o => el(o).forEach(e => e.classList.remove(...o.class.split(' ')))
+  _.toggle_class = o => el(o).forEach(e => e.classList.toggle(...o.class.split(' ')))
+  _.stylesheet = o => {
+    const s = document.createElement('style')
+    s.textContent = o.css
+    document.head.appendChild(s)
+  }
+  _.input = o =>
+    el(o).forEach(e => {
+      if (o.use && o.use === 'plain') e.value = o.value
+      else setInput(e, 'value', o.value)
+    })
+  _.check = o =>
+    el(o).forEach(e => {
+      if (o.use && o.use === 'plain') e.checked = o.value
+      else setChecked(e, o.value)
+    })
+  _.set_text = o => el(o).forEach(e => (e.innerText = o.value))
+  _.write = _.set_text
+  _.duplicate = o =>
+    el(o).forEach(old => {
+      const dup = old.cloneNode(true)
+      old.after(dup)
+      dup.id += o.id
+    })
+  _.set_attribute = o => {
+    o.attribute = o.attribute || o.attr
+    el(o).forEach(e => e.setAttribute(o.attribute, o.value))
+  }
+  _.set = _.set_attribute
+  _.dispatch = o => {
+    let elms = el(o)
+    if (elms.length === 0) elms = [window]
+    elms.forEach(e => dispatchEvent(e, o.event || 'keydown', { key: o.key || 'Space', ...JSON.parse(o.options || '{}') }))
+  }
+  _.keypress = _.dispatch
+  _.mouse = _.dispatch
+  _.trigger = _.dispatch
+  _.listen = o =>
+    el(o).forEach(e =>
+      e.addEventListener(o.for, () => {
+        Shortlet.run(o.actions)
+      })
+    )
+  _.reveal_data = o => el(o).forEach(e => addSpan(e, textMatchJoin(e.dataset[o.data], o.match, o.delimiter), o.target, o.style))
+  _.reveal_attribute = o => el(o).forEach(e => addSpan(e, textMatchJoin(e.getAttribute(o.attribute || o.attr), o.match, o.delimiter), o.target, o.style))
+  _.reveal = _.reveal_attribute
+  _.input_from = o =>
+    el({ ...o, on: o.from || o.on }).forEach(from => {
+      const text = textMatchJoin(from.innerText, o.match, o.delimiter)
+      el({ ...o, on: o.to }).forEach(to => setInput(to, 'value', text))
+    })
+  _.tooltip = o =>
+    el(o).forEach(e => {
+      const rect = e.getBoundingClientRect()
+      const out = document.createElement('span')
+      out.textContent = o.value
+      out.classList.add('shortlet-tooltip')
+      out.setAttribute('style', `left:${rect.left}px;top:${rect.top - 15}px;${o.style || ''}`)
+      document.body.append(out)
+    })
+  return _
 })()
