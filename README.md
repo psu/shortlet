@@ -1,8 +1,8 @@
-i # Shortlet
+# Shortlet
 
 **Tinker with Websites**
 
-Shortlet is a framework to configure and launch small hacks for the web. You can ease your day-to-day by:
+Shortlet is a framework to configure and launch small hacks for the web. Ease your day-to-day by:
 
 - Create keyboard shortcuts
 - Multiple actions with one click
@@ -60,26 +60,27 @@ Each action is written as a JSON object with the following key-value pairs:
 
 #### Properties depending on action
 
-See the list of actions below.
+See each action below.
 
 ---
 
 ## List of Actions
 
-Most actions require one or several elements to be selected, see _Element selection properties_ above.
+Most actions require one or several elements to be selected, see _Element selection properties_ `on/test/if/for` above.
 
 ### Script control and Utilities
 
 - **wait** Wait the given amount of milliseconds:
   - `"delay": 123`
-- **log** Add selected elements to console.log.
+- **log** Print selected elements in console.log.
+  - `on/test/if/for`
 - **highlight** Not yet implemented..
 
 ### Browser interaction
 
 - **goto** Navigate to an url, append the current url or go back/forward in the browser history:
   - `"url": "https://"` or `"history": "back|forward"`
-  - `"append": FALSE|true`
+  - `"append": FALSE|true`..
 - **scroll** Scroll to the selected element or to a fixed postition:
   - `on/test/if/for`
   - `"top": y`
@@ -112,9 +113,9 @@ Most actions require one or several elements to be selected, see _Element select
   - `on/test/if/for`
   - `"as": "BLOCK|flex|inline|..."`
   - `"opacity": 1`..
-- **hide** Hide the selected elements with _display: none_:
+- **hide** Hide the selected elements with _display:none_:
   - `on/test/if/for`
-- **toggle** Toggle visibility for the selected elements. Visible is achieved by chaning the _display_ property:
+- **toggle** Toggle visibility for the selected elements. Visible is achieved by changing the _display_ property:
   - `on/test/if/for`
   - `"as": "BLOCK|flex|inline|..."`
 
