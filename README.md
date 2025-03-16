@@ -68,24 +68,6 @@ See each action below.
 
 Most actions require one or several elements to be selected, see _Element selection properties_ `on/test/if/for` above.
 
-### Script control and Utilities
-
-- **wait** Wait the given amount of milliseconds:
-  - `"delay": 123`
-- **log** Print selected elements in console.log.
-  - `on/test/if/for`
-- **highlight** Not yet implemented..
-
-### Browser interaction
-
-- **goto** Navigate to an url, append the current url or go back/forward in the browser history:
-  - `"url": "https://"` or `"history": "back|forward"`
-  - `"append": FALSE|true`..
-- **scroll** Scroll to the selected element or to a fixed postition:
-  - `on/test/if/for`
-  - `"top": y`
-  - `"left": x`
-
 ### Element interaction
 
 - **click** Click on the selected elements:
@@ -102,6 +84,9 @@ Most actions require one or several elements to be selected, see _Element select
 - **set_text** (alias: write) Change the _innerText_ of the selected elements:
   - `on/test/if/for`
   - `"value": "text"`
+- **append** Not yet implemented..
+- **replace** Not yet implemented..
+  - regex, all/one, only in inputs, on full page, always traverse children. 
 - **set_attribute** (alias: set) Change the selected elements HTML attribute:
   - `on/test/if/for`
   - `"attribute": "alt"`
@@ -152,18 +137,6 @@ Most actions require one or several elements to be selected, see _Element select
   - `"match": "regex"`
   - `"to": "selector"`
 
-### Events
-
-- **dispatch** (alias: trigger, keypress, mouse) Trigger an event on the selected elements:
-  - `on/test/if/for`
-  - `"event": "KEYDOWN|click|mousedown|input|..."`
-  - `"options": "{ bubbles: true, cancelable: true, view: window }"`
-  - `"key": "SPACE|Enter|s"` 
-- **listen** Add an event listener to the selected elements and run the shortlet's actions when it is triggered:
-  - `on/test/if/for`
-  - `"event": "click|keydown|..."`..
-  - `"actions": [{action1}, {action2}]`
-
 ### Create elements 
 
 - **duplicate** Clone the selected elements and add new after them themselves. Optionally.. append the new elements id with a code:
@@ -183,7 +156,35 @@ Most actions require one or several elements to be selected, see _Element select
   - `"style": "inline style"`
 - **tooltip** Not yet implemented.
 
+### Events
 
+- **dispatch** (alias: trigger, keypress, mouse) Trigger an event on the selected elements:
+  - `on/test/if/for`
+  - `"event": "KEYDOWN|click|mousedown|input|..."`
+  - `"options": "{ bubbles: true, cancelable: true, view: window }"`
+  - `"key": "SPACE|Enter|s"` 
+- **listen** Add an event listener to the selected elements and run the shortlet's actions when it is triggered:
+  - `on/test/if/for`
+  - `"event": "click|keydown|..."`..
+  - `"actions": [{action1}, {action2}]`
+
+### Browser interaction
+
+- **goto** Navigate to an url, append the current url or go back/forward in the browser history:
+  - `"url": "https://"` or `"history": "back|forward"`
+  - `"append": FALSE|true`..
+- **scroll** Scroll to the selected element into view, by a delta, or to a fixed postition:
+  - `on/test/if/for`
+  - `"to": "top,left"`
+  - `"by": "delta top,delta left"`..
+
+### Script control and Utilities
+
+- **wait** Wait the given amount of milliseconds:
+  - `"delay": 123`
+- **log** Print selected elements in console.log.
+  - `on/test/if/for`
+- **highlight** Not yet implemented..
     
 
 ---
