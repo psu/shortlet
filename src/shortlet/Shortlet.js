@@ -79,7 +79,7 @@
       .filter(s => s.title)
       .map(s => ({
         name: s.title,
-        description: s.description || `Executes ${s.actions.length} actions`,
+        //        description: s.description || `Executes ${s.actions.length} actions`,
         shortcut: s.shortcut,
         handler: () => {
           runShortlet(s)

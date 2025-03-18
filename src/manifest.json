@@ -2,7 +2,12 @@
   "manifest_version": 3,
   "version": "0.9",
   "name": "Shortlet - Tinker with Websites",
-  "description": "Shortlet is a framework to configure and launch commands and hacks for the web.",
+  "description": "Shortlet is a framework to configure and launch small hacks for the web.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "shortlet@psu"
+    }
+  },
   "action": {
     "default_icon": {
       "256": "icon.png"
@@ -13,7 +18,10 @@
     "256": "icon.png"
   },
   "background": {
-    "service_worker": "shortlet/service-worker.js"
+    "service_worker": "shortlet/background.js",
+    "scripts": [
+      "shortlet/background.js"
+    ]
   },
   "content_scripts": [
     {
@@ -29,7 +37,7 @@
         "shortlet/MiniQueue.js",
         "shortlet/ShortletAPI.js",
         "command-pal/CommandPal.js",
-        "shortlet/inject.js"
+        "shortlet/Shortlet.js"
       ],
       "run_at": "document_idle",
       "match_about_blank": true

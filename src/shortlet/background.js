@@ -46,17 +46,6 @@ chrome.runtime.onInstalled.addListener(details => {
     })
   }
   if (details.reason == 'update') {
-    const thisVersion = chrome.runtime.getManifest().version
-    console.log('Updated from ' + details.previousVersion + ' to ' + thisVersion + '!')
+    console.log('Shortlet: Updated from ' + details.previousVersion + ' to ' + chrome.runtime.getManifest().version + '!')
   }
 })
-
-function exec(tabId, script, args = []) {
-  const obj = typeof script === 'function' ? { func: script, args: args } : { files: script }
-  //world: chrome.scripting.ExecutionWorld.MAIN,
-  return chrome.scripting.executeScript({ target: { tabId: tabId }, ...obj })
-}
-function style(tabId, style) {
-  const obj = typeof style === 'string' ? { css: style } : { files: style }
-  return chrome.scripting.insertCSS({ target: { tabId: tabId }, ...obj })
-}

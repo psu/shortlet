@@ -268,12 +268,12 @@ The JSON object where you define your shortlets.
 
 ### Advanced settings
 
-- **Trigger in input, textarea:** If keyboard shortcuts should be triggered within input elements.
-- **Show dev tools:** Activates logging.
+- **Trigger in inputs:** If keyboard shortcuts should be triggered within input, textarea and select elements.
+- **Developer mode:** Add 'Developer tools' to the command palette and activate logging.
 
 ### command-pal Theme
 
-Not yet implemented
+Not yet implemented.
 
 ---
 
@@ -291,11 +291,11 @@ Allows you to setup and run a list of actions, one at a time. Supports queuing, 
 
 A slightly modified copy of the [command-pal project](https://github.com/benwinding/command-pal).
 
-### inject.js
+### Shortlet.js
 
 The main injection script that bootstraps Shortlet by fetching the shortlets from settings and loading them into CommandPal. Also, when needed, keeps track of elements inside and outside of the viewport.
 
-### service-worker.js
+### background.js
 
 The extension backend, handling local storage and open the settings page.
 
