@@ -102,7 +102,7 @@ const ShortletAPI = (() => {
     if (match.length === 1) return match[0]
     return match.slice(1).join(delimiter)
   }
-  // define Shortlet API
+  // define the Shortlet API
   const _ = {}
   _.wait = o => {} // o.delay
   _.log = o => el(o).forEach(e => console.log('Shortlet.log: ', e))

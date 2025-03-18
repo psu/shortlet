@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "version": "0.9",
+  "version": "1",
   "name": "Shortlet - Tinker with Websites",
   "description": "Shortlet is a framework to configure and launch small hacks for the web.",
   "browser_specific_settings": {

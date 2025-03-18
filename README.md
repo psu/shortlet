@@ -1,6 +1,12 @@
 # Shortlet
 
-**Tinker with Websites**
+```
+ _______      __                    _ __  __     _      __    __       _ __
+/_  __(_)__  / /_____ ____  _    __(_) /_/ /    | | /| / /__ / /  ___ (_) /____ ___
+ / / / / _ \/  \_/ -_) __/ | |/|/ / / __/ _ \   | |/ |/ / -_) _ \(_-</ / __/ -_|_-<
+/_/ /_/_//_/_/\_\\__/_/    |__,__/_/\__/_//_/   |__/|__/\__/_.__/___/_/\__/\__/___/
+
+```
 
 Shortlet is a framework to configure and launch small hacks for the web. Ease your day-to-day by:
 
@@ -309,7 +315,7 @@ Provide the extension settings page with HTML/CSS and code to access the persist
 
 ### Previous art
 
-Nothing exists in vaccum. Shortlet is built from ideas I got when using the brilliant [Shortkeys browser extension](https://github.com/crittermike/shortkeys). [Alfred app](https://alfredapp.com) has been an inspiration for the command palette interface.
+Nothing exists in vaccum. Shortlet is built from ideas I got when using the brilliant [Shortkeys browser extension](https://github.com/crittermike/shortkeys). [Alfred app](https://alfredapp.com) has been an inspiration for the command palette interface. ASCII art from [patorjk.com](https://patorjk.com/software/taag/)
 
 ### Guiding principles
 

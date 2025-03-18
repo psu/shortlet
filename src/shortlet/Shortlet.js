@@ -209,8 +209,12 @@
     updateShortletDataAttributes(page_shortlets)
   })
   cmd.start()
-  window.commandPalIgnoreBlur = dev_mode
-
+  if (dev_mode) console.log(`
+ _______      __                    _ __  __     _      __    __       _ __        
+/_  __(_)__  / /_____ ____  _    __(_) /_/ /    | | /| / /__ / /  ___ (_) /____ ___
+ / / / / _ \/  '_/ -_) __/ | |/|/ / / __/ _ \   | |/ |/ / -_) _ \(_-</ / __/ -_|_-<
+/_/ /_/_//_/_/\_\\__/_/    |__,__/_/\__/_//_/   |__/|__/\__/_.__/___/_/\__/\__/___/
+  `)
   return {
     run: actions => {
       if (typeof actions === 'string') actions = shortlets_list.filter(s => s.id == actions)[0].actions
@@ -219,4 +223,5 @@
   }
 })().then(expo => {
   window.Shortlet = expo
+  if 
 })
