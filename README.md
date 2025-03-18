@@ -10,6 +10,36 @@ Shortlet is a framework to configure and launch small hacks for the web. Ease yo
 
 Shortlet comes as a Chrome extension, providing automatic webpage injection, a command palette and a settings UI.
 
+## Contents
+
+- [Usage](#usage)
+- [Examples](#examples)
+  - [Basic](#basic)
+  - [Advanced](#advanced)
+- [Details](#details)
+- [Actions overview](#actions-overview)
+- [List of Actions](#list-of-actions)
+  - [Element interaction](#element-interaction)
+  - [Element visibility](#element-visibility)
+  - [Styling](#styling)
+  - [Form interaction](#form-interaction)
+  - [Create elements](#create-elements)
+  - [Events](#events)
+  - [Browser interaction](#browser-interaction)
+  - [Script control and Utilities](#script-control-and-utilities)
+- [Settings](#settings)
+  - [Command palette shortcut](#command-palette-shortcut)
+  - [Shortlets](#shortlets)
+  - [Advanced settings](#advanced-settings)
+  - [command-pal Theme](#command-pal-theme)
+- [Code building-blocks](#code-building-blocks)
+  - [ShortletAPI.js](#shortletapijs)
+  - [MiniQueue.js](#miniqueuejs)
+  - [CommandPal.js](#commandpaljs)
+  - [inject.js](#injectjs)
+  - [service-worker.js](#service-workerjs)
+  - [settings.html/.js/.css](#settingshtmljscss)
+
 ---
 
 ## Usage
@@ -135,26 +165,24 @@ Other shortlet properties are _id_, _title_, _shortcut_, and _repeat_.
 
 ## Actions overview
 
-### Syntax
-
 Each action is written as a JSON object with the following key-value pairs:
 
-#### Mandatory properties
+### Mandatory properties
 
 - `"do": "action code"` What action to run. Mandatory.
 
-#### Element selection properties
+### Element selection properties
 
 - `"on": "selector"` Almost always needed. Defines the list of elements to apply the action to by running querySelectorAll with the provided selector, then filter by _text_, _if_, and _for_.
 - `"text": "regex"` Filters the selected list of elements by the value of their property _innerText_.
 - `"if": "in view|frontmost"` Filters the list of selected elements by one/both of "in view" and "frontmost". Useful to avoid manipulating elements not currently visible.
 - `"for": "FIRST|last|each|but_last|but_first|random"` Applied last, selecting elements based on position in the remaining list.
 
-#### Optional properties
+### Optional properties
 
 - `"delay": 123` Wait the given amount of milliseconds **before** running the action.
 
-#### Properties depending on action
+### Properties depending on action
 
 See each action below.
 
@@ -295,9 +323,7 @@ Nothing exists in vaccum. Shortlet is built from ideas I got when using the bril
 
 ### Guiding principles
 
-- Use natural language.
-- Queues are cool.
-- Premature optimization is immature.
+Queues are cool, use natural language, have fun.
 
 ---
 
