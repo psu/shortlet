@@ -84,9 +84,9 @@ Most actions require one or several elements to be selected, see _Element select
 - **set_text** (alias: write) Change the _innerText_ of the selected elements:
   - `on/test/if/for`
   - `"value": "text"`
-- **append** Not yet implemented..
-- **replace** Not yet implemented..
-  - regex, all/one, only in inputs, on full page, always traverse children. 
+- **append** Not yet implemented.
+- **replace** Not yet implemented.
+  - regex, all/one, only in inputs, on full page, always traverse children.
 - **set_attribute** (alias: set) Change the selected elements HTML attribute:
   - `on/test/if/for`
   - `"attribute": "alt"`
@@ -97,7 +97,7 @@ Most actions require one or several elements to be selected, see _Element select
 - **show** Show the selected elements by changing the _display_ and _opacity_ properties:
   - `on/test/if/for`
   - `"as": "BLOCK|flex|inline|..."`
-  - `"opacity": 1`..
+  - `"opacity": 1`
 - **hide** Hide the selected elements with _display:none_:
   - `on/test/if/for`
 - **toggle** Toggle visibility for the selected elements. Visible is achieved by changing the _display_ property:
@@ -127,28 +127,29 @@ Most actions require one or several elements to be selected, see _Element select
 - **input** Input a value into the selected elements. By default, trying to trigger data-binding code. Alternatively use simple assignment:
   - `on/test/if/for`
   - `"value": "text"`
-  - `"use": "ADVANCED|simple"`..
+  - `"use": "ADVANCED|simple"`
 - **check** Change the selected checkbox elements. By default, trying to trigger data-binding code. Alternatively use simple assignment:
   - `on/test/if/for`
-  - `"value": TRUE|false`..
-- **input_from** Add the selected elements matching _innerText_ to the selected inputs. 
+  - `"value": TRUE|false`
+  - `"use": "ADVANCED|simple"`
+- **input_from** Add the selected elements matching _innerText_ to the selected inputs.
   - `test/if/for`
   - `"from": "selector"`
   - `"match": "regex"`
   - `"to": "selector"`
 
-### Create elements 
+### Create elements
 
-- **duplicate** Clone the selected elements and add new after them themselves. Optionally.. append the new elements id with a code:
+- **duplicate** Clone the selected elements and add new after them themselves. Optionally append the new elements id with a code:
   - `on/test/if/for`
   - `"id": "-code"`
-- **reveal_data** Create span elements with the matching text from the selected elements dataset attribute. Optionally style the span and define a target _parent_ for the span: 
+- **reveal_data** Create span elements with the matching text from the selected elements dataset attribute. Optionally style the span and define a target _parent_ for the span:
   - `on/test/if/for`
   - `"data": "dataSetNameCamelCase"`
   - `"match": "regex"`
   - `"target": "PARENT|selector"`
   - `"style": "inline style"`
-- **reveal_attribute** (alias: reveal) Create span elements with the matching text from the selected elements html attribute. Optionally style the span and define a target _parent_ for the span: 
+- **reveal_attribute** (alias: reveal) Create span elements with the matching text from the selected elements html attribute. Optionally style the span and define a target _parent_ for the span:
   - `on/test/if/for`
   - `"attribute": "name"`
   - `"match": "regex"`
@@ -162,21 +163,22 @@ Most actions require one or several elements to be selected, see _Element select
   - `on/test/if/for`
   - `"event": "KEYDOWN|click|mousedown|input|..."`
   - `"options": "{ bubbles: true, cancelable: true, view: window }"`
-  - `"key": "SPACE|Enter|s"` 
+  - `"key": "SPACE|Enter|s"`
 - **listen** Add an event listener to the selected elements and run the shortlet's actions when it is triggered:
   - `on/test/if/for`
-  - `"event": "click|keydown|..."`..
+  - `"event": "click|keydown|..."`
   - `"actions": [{action1}, {action2}]`
 
 ### Browser interaction
 
 - **goto** Navigate to an url, append the current url or go back/forward in the browser history:
   - `"url": "https://"` or `"history": "back|forward"`
-  - `"append": FALSE|true`..
+  - `"append": FALSE|true`
 - **scroll** Scroll to the selected element into view, by a delta, or to a fixed postition:
   - `on/test/if/for`
   - `"to": "top,left"`
-  - `"by": "delta top,delta left"`..
+  - `"by": "delta top,delta left"`
+  - `"options": "{ behavior: 'auto', block: 'nearest', inline: 'nearest' }"`
 
 ### Script control and Utilities
 
@@ -184,26 +186,29 @@ Most actions require one or several elements to be selected, see _Element select
   - `"delay": 123`
 - **log** Print selected elements in console.log.
   - `on/test/if/for`
-- **highlight** Not yet implemented..
-    
+- **highlight** Not yet implemented.
 
 ---
 
 ## Settings
 
-### Command palette shortcut..
-Keyboard shortcut to show the shortlet launcher command palette. List of available keys..
+### Command palette shortcut
+
+Keyboard shortcut to show the shortlet launcher command palette.
+**command-pal** uses the hotkeys-js package to capture keyboard input. [hotkeys-js documentation](https://github.com/jaywcjlove/hotkeys-js?tab=readme-ov-file#supported-keys) explains what keys you can use for this setting.
 
 ### Shortlets
-The JSON object where you define your shortlets. 
+
+The JSON object where you define your shortlets.
 
 ### Advanced settings
 
-- **Trigger in input, textarea:** If keyboard shortcuts should be triggered within input elements. 
-- **Show dev tools:** Activates logging. 
+- **Trigger in input, textarea:** If keyboard shortcuts should be triggered within input elements.
+- **Show dev tools:** Activates logging.
 
 ### command-pal Theme
-Not yet implemented 
+
+Not yet implemented
 
 ---
 

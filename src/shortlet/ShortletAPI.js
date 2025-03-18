@@ -85,8 +85,8 @@ const ShortletAPI = (() => {
     dispatchEvent(elem, 'input')
     dispatchEvent(elem, 'mousedown')
   }
-  function setChecked(elem, value = 'checked') {
-    setInputProperty(elem, 'checked', value)
+  function setChecked(elem, value = true) {
+    setInputProperty(elem, 'checked', value ? 'checked' : '')
     dispatchEvent(elem, 'mousedown')
   }
   function addSpan(elem, text, target, style = 'padding:2px 5px') {
@@ -118,13 +118,17 @@ const ShortletAPI = (() => {
     }
   }
   _.click = o => el(o).forEach(e => e.click())
-  _.scroll_by = o => {
-    const e = el(o)[0]
-    o.top = o.top || e.clientHeight
-    o.left = o.left || 0
-    e.scrollBy(o.left, o.top)
+  _.scroll = o => {
+    if (o.on) {
+      el(o).forEach(e => e.scrollIntoView(o.options || { behavior: 'auto', block: 'nearest', inline: 'nearest' }))
+    } else if (o.by) {
+      const by = o.by.split(',')
+      window.scrollBy({ top: Number(by[0]), left: Number(by[1]), ...(o.options || { behavior: 'auto' }) })
+    } else if (o.to) {
+      const to = o.to.split(',')
+      window.scrollTo({ top: Number(o.to[0]), left: Number(o.to[1]), ...(o.options || { behavior: 'auto' }) })
+    }
   }
-  _.scroll_to = o => el(o)[0].scrollTo(o.left || 0, o.top || 0)
   _.blur = () => unFocus()
   _.focus = o => {
     unFocus()
@@ -141,7 +145,7 @@ const ShortletAPI = (() => {
   _.show = o =>
     el(o).forEach(e => {
       e.style.display = o.as || 'block'
-      e.style.opacity = 1
+      e.style.opacity = typeof o.opacity === 'number' ? o.opacity : 1
     })
   _.hide = o => el(o).forEach(e => (e.style.display = 'none'))
   _.toggle = o =>
@@ -160,12 +164,12 @@ const ShortletAPI = (() => {
   }
   _.input = o =>
     el(o).forEach(e => {
-      if (o.use && o.use === 'plain') e.value = o.value
+      if (o.use && o.use === 'simple') e.value = o.value
       else setInput(e, 'value', o.value)
     })
   _.check = o =>
     el(o).forEach(e => {
-      if (o.use && o.use === 'plain') e.checked = o.value
+      if (o.use && o.use === 'simple') e.checked = o.value
       else setChecked(e, o.value)
     })
   _.set_text = o => el(o).forEach(e => (e.innerText = o.value))
@@ -174,7 +178,7 @@ const ShortletAPI = (() => {
     el(o).forEach(old => {
       const dup = old.cloneNode(true)
       old.after(dup)
-      dup.id += o.id
+      if (o.id) dup.id += o.id
     })
   _.set_attribute = o => {
     o.attribute = o.attribute || o.attr
@@ -191,7 +195,7 @@ const ShortletAPI = (() => {
   _.trigger = _.dispatch
   _.listen = o =>
     el(o).forEach(e =>
-      e.addEventListener(o.for, () => {
+      e.addEventListener(o.event, () => {
         Shortlet.run(o.actions)
       })
     )
