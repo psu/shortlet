@@ -91,7 +91,9 @@ textarea {
 label:has(input[type='checkbox']) {
   font-weight: normal;
 }
-.version {
+#version {
+  margin-top: 5px;
+  font-size: smaller;
   margin-bottom: 1.6em;
   color: gray;
 }
