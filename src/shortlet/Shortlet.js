@@ -209,7 +209,8 @@
     updateShortletDataAttributes(page_shortlets)
   })
   cmd.start()
-  if (dev_mode) console.log(`
+  if (dev_mode)
+    console.log(`
  _______      __                    _ __  __     _      __    __       _ __        
 /_  __(_)__  / /_____ ____  _    __(_) /_/ /    | | /| / /__ / /  ___ (_) /____ ___
  / / / / _ \/  '_/ -_) __/ | |/|/ / / __/ _ \   | |/ |/ / -_) _ \(_-</ / __/ -_|_-<
@@ -223,5 +224,4 @@
   }
 })().then(expo => {
   window.Shortlet = expo
-  if 
 })
