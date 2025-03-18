@@ -166,123 +166,17 @@ Most actions require one or several elements to be selected, see _Element select
 
 ### Element interaction
 
-- **click** Click on the selected elements:
-  - `on/test/if/for`
-- **blur** Remove focus from all elements:
-  - `on/test/if/for`
-- **focus** Focus the selected elements:
-  - `on/test/if/for`
-- **select** Select the selected elements:
-  - `on/test/if/for`
-- **copy** Copy the selected elements' _innerText_ to the clipboard, joined by a delimeter:
-  - `on/test/if/for`
-  - `"delimiter": "\n"`
-- **set_text** (alias: write) Change the _innerText_ of the selected elements:
-  - `on/test/if/for`
-  - `"value": "text"`
-- **append** Not yet implemented.
-- **replace** Not yet implemented.
-  - regex, all/one, only in inputs, on full page, always traverse children.
-- **set_attribute** (alias: set) Change the selected elements HTML attribute:
-  - `on/test/if/for`
-  - `"attribute": "alt"`
-  - `"value": "text"`
-
-### Element visibility
-
-- **show** Show the selected elements by changing the _display_ and _opacity_ properties:
-  - `on/test/if/for`
-  - `"as": "BLOCK|flex|inline|..."`
-  - `"opacity": 1`
-- **hide** Hide the selected elements with _display:none_:
-  - `on/test/if/for`
-- **toggle** Toggle visibility for the selected elements. Visible is achieved by changing the _display_ property:
-  - `on/test/if/for`
-  - `"as": "BLOCK|flex|inline|..."`
-
-### Styling
-
-- **style** Change the selected elements style property:
-  - `on/test/if/for`
-  - `"property": "color"`
-  - `"value": "#f9c"`
-- **add_class** Add a list of space separated classes to the selected elements:
-  - `on/test/if/for`
-  - `"class": "class-one class-two"`
-- **remove_class** Remove a list of space separated classes from the selected elements:
-  - `on/test/if/for`
-  - `"class": "class-one class-two"`
-- **toggle_class** Toggle a list of space separated classes on the selected elements:
-  - `on/test/if/for`
-  - `"class": "class-one class-two"`
-- **stylesheet** Add the given css code to the page in a _style_ tag:
-  - `"css": "code"`
-
-### Form interaction
-
-- **input** Input a value into the selected elements. By default, trying to trigger data-binding code. Alternatively use simple assignment:
-  - `on/test/if/for`
-  - `"value": "text"`
-  - `"use": "ADVANCED|simple"`
-- **check** Change the selected checkbox elements. By default, trying to trigger data-binding code. Alternatively use simple assignment:
-  - `on/test/if/for`
-  - `"value": TRUE|false`
-  - `"use": "ADVANCED|simple"`
-- **input_from** Add the selected elements matching _innerText_ to the selected inputs.
-  - `test/if/for`
-  - `"from": "selector"`
-  - `"match": "regex"`
-  - `"to": "selector"`
-
-### Create elements
-
-- **duplicate** Clone the selected elements and add new after them themselves. Optionally append the new elements id with a code:
-  - `on/test/if/for`
-  - `"id": "-code"`
-- **reveal_data** Create span elements with the matching text from the selected elements dataset attribute. Optionally style the span and define a target _parent_ for the span:
-  - `on/test/if/for`
-  - `"data": "dataSetNameCamelCase"`
-  - `"match": "regex"`
-  - `"target": "PARENT|selector"`
-  - `"style": "inline style"`
-- **reveal_attribute** (alias: reveal) Create span elements with the matching text from the selected elements html attribute. Optionally style the span and define a target _parent_ for the span:
-  - `on/test/if/for`
-  - `"attribute": "name"`
-  - `"match": "regex"`
-  - `"target": "PARENT|selector"`
-  - `"style": "inline style"`
-- **tooltip** Not yet implemented.
-
-### Events
-
-- **dispatch** (alias: trigger, keypress, mouse) Trigger an event on the selected elements:
-  - `on/test/if/for`
-  - `"event": "KEYDOWN|click|mousedown|input|..."`
-  - `"options": "{ bubbles: true, cancelable: true, view: window }"`
-  - `"key": "SPACE|Enter|s"`
-- **listen** Add an event listener to the selected elements and run the shortlet's actions when it is triggered:
-  - `on/test/if/for`
-  - `"event": "click|keydown|..."`
-  - `"actions": [{action1}, {action2}]`
-
-### Browser interaction
-
-- **goto** Navigate to an url, append the current url or go back/forward in the browser history:
-  - `"url": "https://"` or `"history": "back|forward"`
-  - `"append": FALSE|true`
-- **scroll** Scroll to the selected element into view, by a delta, or to a fixed postition:
-  - `on/test/if/for`
-  - `"to": "top,left"`
-  - `"by": "delta top,delta left"`
-  - `"options": "{ behavior: 'auto', block: 'nearest', inline: 'nearest' }"`
-
-### Script control and Utilities
-
-- **wait** Wait the given amount of milliseconds:
-  - `"delay": 123`
-- **log** Print selected elements in console.log.
-  - `on/test/if/for`
-- **highlight** Not yet implemented.
+| Action            | Description                                                                     | Parameters                                                             |
+| ----------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **click**         | Click on the selected elements                                                  | `on/test/if/for`                                                       |
+| **blur**          | Remove focus from all elements                                                  | `on/test/if/for`                                                       |
+| **focus**         | Focus the selected elements                                                     | `on/test/if/for`                                                       |
+| **select**        | Select the selected elements                                                    | `on/test/if/for`                                                       |
+| **copy**          | Copy the selected elements' _innerText_ to the clipboard, joined by a delimiter | `on/test/if/for` <br> `"delimiter": "\n"`                              |
+| **set_text**      | (alias: write) Change the _innerText_ of the selected elements                  | `on/test/if/for` <br> `"value": "text"`                                |
+| **append**        | Not yet implemented                                                             |                                                                        |
+| **replace**       | Not yet implemented                                                             | regex, all/one, only in inputs, on full page, always traverse children |
+| **set_attribute** | (alias: set) Change the selected elements HTML attribute                        | `on/test/if/for` <br> `"attribute": "alt"` <br> `"value": "text"`      |
 
 ---
 
