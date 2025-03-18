@@ -23,6 +23,102 @@ Shortlet comes as a Chrome extension, providing automatic webpage injection, a c
 
 ## Examples
 
+### Basic
+
+A simple shortlet to click a button, added within the shortlets wrapper object.
+
+```json
+{
+  "shortlets": [
+    {
+      "id": "example_click_button",
+      "title": "Click a button",
+      "conditions": {
+        "url": "example.com"
+      },
+      "shortcut": "ctrl+g",
+      "actions": [
+        {
+          "do": "click",
+          "on": "div.button"
+        }
+      ]
+    }
+  ]
+}
+```
+
+A shortlet with several actions. Start with "blur" to exit possible input fields, check all checkboxes, click save, what half a second and then return the the previous page.
+
+```json
+{
+  "shortlets": [
+    { "id": "example_click_button", "title": "Click a button", "conditions": { "url": "example.com" }, "shortcut": "ctrl+g", "actions": [{ "do": "click", "on": "div.button" }] },
+    {
+      "id": "exmaple_check_all_checkboxes",
+      "title": "Check all checkboxes and go back",
+      "conditions": {
+        "url": "example.com"
+      },
+      "actions": [
+        {
+          "do": "blur"
+        },
+        {
+          "do": "check",
+          "for": "each",
+          "on": "input[type=checkbox]",
+          "value": true
+        },
+        {
+          "do": "click",
+          "on": "button",
+          "text": "save"
+        },
+        {
+          "do": "goto",
+          "history": "back",
+          "delay": 500
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Advanced
+
+A shortlet activating a delete dialog and click confirm, repeated 5 times.
+
+```json
+{
+  "id": "example_delete_multiple",
+  "title": "Delete 5 objects ⚠️",
+  "conditions": {
+    "url": "example.com"
+  },
+  "shortcut": "shift+alt+backspace",
+  "repeat": 5,
+  "actions": [
+    {
+      "do": "blur",
+      "delay": 900
+    },
+    {
+      "do": "keypress",
+      "key": "Backspace",
+      "options": {
+        "altKey": true
+      }
+    },
+    {
+      "do": "click",
+      "on": "button.confirm-delete"
+    }
+  ]
+}
+```
+
 ---
 
 ## Details
