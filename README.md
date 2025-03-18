@@ -28,17 +28,7 @@ Shortlet comes as a Chrome extension, providing automatic webpage injection, a c
   - [Browser interaction](#browser-interaction)
   - [Script control and Utilities](#script-control-and-utilities)
 - [Settings](#settings)
-  - [Command palette shortcut](#command-palette-shortcut)
-  - [Shortlets](#shortlets)
-  - [Advanced settings](#advanced-settings)
-  - [command-pal Theme](#command-pal-theme)
 - [Code building-blocks](#code-building-blocks)
-  - [ShortletAPI.js](#shortletapijs)
-  - [MiniQueue.js](#miniqueuejs)
-  - [CommandPal.js](#commandpaljs)
-  - [inject.js](#injectjs)
-  - [service-worker.js](#service-workerjs)
-  - [settings.html/.js/.css](#settingshtmljscss)
 
 ---
 
