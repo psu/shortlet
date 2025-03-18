@@ -166,74 +166,74 @@ Most actions require one or several elements to be selected, see _Element select
 
 ### Element interaction
 
-| Action            | Description                                                                     | Properties                                                             |
-| ----------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| **click**         | Click on the selected elements                                                  | `on/test/if/for`                                                       |
-| **blur**          | Remove focus from all elements                                                  | `on/test/if/for`                                                       |
-| **focus**         | Focus the selected elements                                                     | `on/test/if/for`                                                       |
-| **select**        | Select the selected elements                                                    | `on/test/if/for`                                                       |
-| **copy**          | Copy the selected elements' _innerText_ to the clipboard, joined by a delimiter | `on/test/if/for` <br> `"delimiter": "\n"`                              |
-| **set_text**      | (alias: write) Change the _innerText_ of the selected elements                  | `on/test/if/for` <br> `"value": "text"`                                |
-| **append**        | Not yet implemented                                                             |                                                                        |
-| **replace**       | Not yet implemented                                                             | regex, all/one, only in inputs, on full page, always traverse children |
-| **set_attribute** | (alias: set) Change the selected elements HTML attribute                        | `on/test/if/for` <br> `"attribute": "alt"` <br> `"value": "text"`      |
+| Action                            | Description                                                                     | Properties                                                                                |
+| --------------------------------- | ------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| **click**                         | Click on the selected elements                                                  | <ul><li>`on/test/if/for`</li></ul>                                                        |
+| **blur**                          | Remove focus from all elements                                                  | <ul><li>`on/test/if/for`</li></ul>                                                        |
+| **focus**                         | Focus the selected elements                                                     | <ul><li>`on/test/if/for`</li></ul>                                                        |
+| **select**                        | Select the selected elements                                                    | <ul><li>`on/test/if/for`</li></ul>                                                        |
+| **copy**                          | Copy the selected elements' _innerText_ to the clipboard, joined by a delimiter | <ul><li>`on/test/if/for`</li><li>`"delimiter": "\n"`</li></ul>                            |
+| **set_text** <br> alias: write    | Change the _innerText_ of the selected elements                                 | <ul><li>`on/test/if/for`</li><li>`"value": "text"`</li></ul>                              |
+| **append**                        | Not yet implemented                                                             |                                                                                           |
+| **replace**                       | Not yet implemented                                                             | regex, all/one, only in inputs, on full page, always traverse children                    |
+| **set_attribute** <br> alias: set | Change the selected elements HTML attribute                                     | <ul><li>`on/test/if/for`</li><li>`"attribute": "alt"`</li><li>`"value": "text"`</li></ul> |
 
 ### Element visibility
 
-| Action     | Description                                                                                         | Properties                                                                 |
-| ---------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| **show**   | Show the selected elements by changing the _display_ and _opacity_ properties                       | `on/test/if/for` <br> `"as": "BLOCK\|flex\|inline\|..."`<br>`"opacity": 1` |
-| **hide**   | Hide the selected elements with _display:none_                                                      | `on/test/if/for`                                                           |
-| **toggle** | Toggle visibility for the selected elements. Visible is achieved by changing the _display_ property | `on/test/if/for` <br> `"as": "BLOCK\|flex\|inline\|..."`                   |
+| Action     | Description                                                                                         | Properties                                                                                           |
+| ---------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **show**   | Show the selected elements by changing the _display_ and _opacity_ properties                       | <ul><li>`on/test/if/for`</li><li>`"as": "BLOCK\|flex\|inline\|..."`</li><li>`"opacity": 1`</li></ul> |
+| **hide**   | Hide the selected elements with _display:none_                                                      | <ul><li>`on/test/if/for`</li></ul>                                                                   |
+| **toggle** | Toggle visibility for the selected elements. Visible is achieved by changing the _display_ property | <ul><li>`on/test/if/for`</li><li>`"as": "BLOCK\|flex\|inline\|..."`</li></ul>                        |
 
 ### Styling
 
-| Action           | Description                                                         | ParamPropertieseters                                               |
-| ---------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| **style**        | Change the selected elements style property                         | `on/test/if/for` <br> `"property": "color"` <br> `"value": "#f9c"` |
-| **add_class**    | Add a list of space separated classes to the selected elements      | `on/test/if/for` <br> `"class": "class-one class-two"`             |
-| **remove_class** | Remove a list of space separated classes from the selected elements | `on/test/if/for` <br> `"class": "class-one class-two"`             |
-| **toggle_class** | Toggle a list of space separated classes on the selected elements   | `on/test/if/for` <br> `"class": "class-one class-two"`             |
-| **stylesheet**   | Add the given css code to the page in a _style_ tag                 | `"css": "code"`                                                    |
+| Action           | Description                                                         | Properties                                                                                 |
+| ---------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| **style**        | Change the selected elements style property                         | <ul><li>`on/test/if/for`</li><li>`"property": "color"`</li><li>`"value": "#f9c"`</li></ul> |
+| **add_class**    | Add a list of space separated classes to the selected elements      | <ul><li>`on/test/if/for`</li><li>`"class": "class-one class-two"`</li></ul>                |
+| **remove_class** | Remove a list of space separated classes from the selected elements | <ul><li>`on/test/if/for`</li><li>`"class": "class-one class-two"`</li></ul>                |
+| **toggle_class** | Toggle a list of space separated classes on the selected elements   | <ul><li>`on/test/if/for`</li><li>`"class": "class-one class-two"`</li></ul>                |
+| **stylesheet**   | Add the given css code to the page in a _style_ tag                 | <ul><li>`"css": "code"`</li></ul>                                                          |
 
 ### Form interaction
 
-| Action         | Description                                                                                                                     | Properties                                                                              |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| **input**      | Input a value into the selected elements. By default, trying to trigger data-binding code. Alternatively use simple assignment. | `on/test/if/for` <br> `"value": "text"` <br> `"use": "ADVANCED\|simple"`                |
-| **check**      | Change the selected checkbox elements. By default, trying to trigger data-binding code. Alternatively use simple assignment.    | `on/test/if/for` <br> `"value": TRUE\|false"` <br> `"use": "ADVANCED\|simple"`          |
-| **input_from** | Add the selected elements matching _innerText_ to the selected inputs.                                                          | `test/if/for` <br> `"from": "selector"` <br> `"match": "regex"` <br> `"to": "selector"` |
+| Action         | Description                                                                                                                     | Properties                                                                                                         |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **input**      | Input a value into the selected elements. By default, trying to trigger data-binding code. Alternatively use simple assignment. | <ul><li>`on/test/if/for`</li><li>`"value": "text"`</li><li>`"use": "ADVANCED\|simple"`</li></ul>                   |
+| **check**      | Change the selected checkbox elements. By default, trying to trigger data-binding code. Alternatively use simple assignment.    | <ul><li>`on/test/if/for`</li><li>`"value": TRUE\|false"`</li><li>`"use": "ADVANCED\|simple"`</li></ul>             |
+| **input_from** | Add the selected elements matching _innerText_ to the selected inputs.                                                          | <ul><li>`test/if/for`</li><li>`"from": "selector"`</li><li>`"match": "regex"`</li><li>`"to": "selector"`</li></ul> |
 
 ### Create elements
 
-| Action                               | Description                                                                                                                                                    | Properties                                                                                                                                        |
-| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **duplicate**                        | Clone the selected elements and add new after them themselves. Optionally append the new elements id with a code.                                              | `on/test/if/for` <br> `"id": "-code"`                                                                                                             |
-| **reveal_data**                      | Create span elements with the matching text from the selected elements dataset attribute. Optionally style the span and define a target _parent_ for the span. | `on/test/if/for` <br> `"data": "dataSetNameCamelCase"` <br> `"match": "regex"` <br> `"target": "PARENT\|selector"` <br> `"style": "inline style"` |
-| **reveal_attribute** (alias: reveal) | Create span elements with the matching text from the selected elements html attribute. Optionally style the span and define a target _parent_ for the span.    | `on/test/if/for` <br> `"attribute": "name"` <br> `"match": "regex"` <br> `"target": "PARENT\|selector"` <br> `"style": "inline style"`            |
-| **tooltip**                          | Not yet implemented.                                                                                                                                           |                                                                                                                                                   |
+| Action                                  | Description                                                                                                                                                    | Properties                                                                                                                                                                      |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **duplicate**                           | Clone the selected elements and add new after them themselves. Optionally append the new elements id with a code.                                              | <ul><li>`on/test/if/for`</li><li>`"id": "-code"`</li></ul>                                                                                                                      |
+| **reveal_data**                         | Create span elements with the matching text from the selected elements dataset attribute. Optionally style the span and define a target _parent_ for the span. | <ul><li>`on/test/if/for`</li><li>`"data": "dataSetNameCamelCase"`</li><li>`"match": "regex"`</li><li>`"target": "PARENT\|selector"`</li><li>`"style": "inline style"`</li></ul> |
+| **reveal_attribute** <br> alias: reveal | Create span elements with the matching text from the selected elements html attribute. Optionally style the span and define a target _parent_ for the span.    | <ul><li>`on/test/if/for`</li><li>`"attribute": "name"`</li><li>`"match": "regex"`</li><li>`"target": "PARENT\|selector"`</li><li>`"style": "inline style"`</li></ul>            |
+| **tooltip**                             | Not yet implemented.                                                                                                                                           |                                                                                                                                                                                 |
 
 ### Events
 
-| Action                                         | Description                                                                                         | Properties                                                                                                                                                                   |
-| ---------------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **dispatch** (alias: trigger, keypress, mouse) | Trigger an event on the selected elements.                                                          | `on/test/if/for` <br> `"event": "KEYDOWN\|click\|mousedown\|input\|..."`<br>`"options": "{ bubbles: true, cancelable: true, view: window }"`<br>`"key": "SPACE\|Enter\|..."` |
-| **listen**                                     | Add an event listener to the selected elements and run the shortlet's actions when it is triggered. | `on/test/if/for` <br> `"event": "click\|keydown\|..."`<br>`"actions": [{action1}, {action2}]`                                                                                |
+| Action                                              | Description                                                                                         | Properties                                                                                                                                                                                                  |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **dispatch** <br> aliases: trigger, keypress, mouse | Trigger an event on the selected elements.                                                          | <ul><li>`on/test/if/for`</li><li>`"event": "KEYDOWN\|click\|mousedown\|input\|..."`</li><li>`"options": "{ bubbles: true, cancelable: true, view: window }"`</li><li>`"key": "SPACE\|Enter\|..."`</li></ul> |
+| **listen**                                          | Add an event listener to the selected elements and run the shortlet's actions when it is triggered. | <ul><li>`on/test/if/for`</li><li>`"event": "click\|keydown\|..."`</li><li>`"actions": [{action1}, {action2}]`</li></ul>                                                                                     |
 
 ### Browser interaction
 
-| Action     | Description                                                                           | Properties                                                                                                                                                 |
-| ---------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **goto**   | Navigate to an url, append the current url or go back/forward in the browser history. | `"url": "https://"` or `"history": "back\|forward"` <br> `"append": FALSE\|true`                                                                           |
-| **scroll** | Scroll to the selected element into view, by a delta, or to a fixed position.         | `on/test/if/for` <br> `"to": "top,left"` <br> `"by": "delta top,delta left"` <br> `"options": "{ behavior: 'auto', block: 'nearest', inline: 'nearest' }"` |
+| Action     | Description                                                                           | Properties                                                                                                                                                                            |
+| ---------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **goto**   | Navigate to an url, append the current url or go back/forward in the browser history. | <ul><li>`"url": "https://"` or `"history": "back\|forward"`</li><li>`"append": FALSE\|true`</li></ul>                                                                                 |
+| **scroll** | Scroll to the selected element into view, by a delta, or to a fixed position.         | <ul><li>`on/test/if/for`</li><li>`"to": "top,left"`</li><li>`"by": "delta top,delta left"`</li><li>`"options": "{ behavior: 'auto', block: 'nearest', inline: 'nearest' }"`</li></ul> |
 
 ### Script control and Utilities
 
-| Action        | Description                             | Properties       |
-| ------------- | --------------------------------------- | ---------------- |
-| **wait**      | Wait the given amount of milliseconds.  | `"delay": 123`   |
-| **log**       | Print selected elements in console.log. | `on/test/if/for` |
-| **highlight** | Not yet implemented.                    |                  |
+| Action        | Description                             | Properties                         |
+| ------------- | --------------------------------------- | ---------------------------------- |
+| **wait**      | Wait the given amount of milliseconds.  | <ul><li>`"delay": 123`</li></ul>   |
+| **log**       | Print selected elements in console.log. | <ul><li>`on/test/if/for`</li></ul> |
+| **highlight** | Not yet implemented.                    |                                    |
 
 ---
 
