@@ -18,11 +18,9 @@ const ShortletAPI = (() => {
       if (o.if.match(/front/i) !== null) elms = elms.filter(e => isFrontmost(e))
       if (o.for === 'random') return elms.slice((r = rand(1, elms.length)), r - 1)
       elms = elms.slice(slice_map[o.for].start, slice_map[o.for].end)
-      if (elms.length === 0) throw new Error(`No elements found for: `, o.on)
+      if (elms.length === 0) throw new Error(`No elements matching selector "${o.on}"`)
       return elms
-    } catch (err) {
-      console.log(`Shortlet el() error: \n`, err)
-    }
+    } catch (err) {}
   }
   // helpers to filter elements
   function matchInnerText(elem, text) {

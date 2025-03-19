@@ -14,7 +14,7 @@ Shortlet is a framework to configure and launch small hacks for the web. Ease yo
 - Multiple actions with one click
 - Webpage manipulation without coding
 
-Shortlet comes as a Chrome/Firefox extension, providing automatic webpage injection, a command palette and a settings UI.
+Shortlet comes as a Chrome/[Firefox](https://addons.mozilla.org/en-US/firefox/addon/shortlet) extension, providing automatic webpage injection, a command palette and a settings UI.
 
 ## Contents
 
@@ -40,7 +40,7 @@ Shortlet comes as a Chrome/Firefox extension, providing automatic webpage inject
 
 ## Usage
 
-1. Download and load the folder _src_ as an unpacked extension in Chrome.
+1. Install from [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/shortlet) or download and load the folder _src_ as an unpacked extension in Chrome.
 2. Open Shortlet settings by clicking on the extension icon, or trigger the Shortlet command palette with the default shortcut `ctrl+space`.
 3. Add your first shortlet and save the settings.
 4. Navigate to, or reload, the webpage and launch the shortlet.

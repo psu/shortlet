@@ -6,7 +6,9 @@
   const dev_mode = await callServiceWorker({ action: 'get_storage', key: 'dev_mode' })
   // get shortlets for the current webpage
   function getShortlets() {
-    return shortlets_list.shortlets.filter(s => window.location.href.match(s.conditions.url) !== null)
+    const list = shortlets_list.shortlets.filter(s => window.location.href.match(s.conditions.url) !== null)
+    if (dev_mode) console.log('Shortlets loaded.', list)
+    return list
   }
   // intra-extension communication
   function callServiceWorker(msg) {
@@ -20,25 +22,13 @@
   // helper to wrap and queue a single action
   function queueAction(q, a) {
     // logging templates
-    const logSuccess = (a = '') => {
-      if (!dev_mode) return
-      const action = { ...a }
-      let text = `🦾${action.do}`
-      if (typeof action === 'object') {
-        text = `🦾${action.do}   (`
-        delete action.do
-        text += Object.entries(action)
-          .map(o => `${o[0]}: ${JSON.stringify(o[1])}`)
-          .join(', ')
-        text += ')'
-      }
-      console.log(`Shortlet: ${text}`)
+    const logSuccess = action => {
+      if (dev_mode) console.log(`Shortlet "${action.do}" ✔️`, action)
     }
     const logError = (err = '', action = '', obj = {}) => {
-      if (!dev_mode) return
-      console.log(`Shortlet: ${err}\nFor action '${action}'`, obj)
+      if (dev_mode) console.log(`Shortlet "${action} 🚫": ${err}`, obj)
     }
-    const actionWrapper = () => {
+    const wrapAction = () => {
       try {
         ShortletAPI[a.do](a)
         logSuccess(a)
@@ -55,7 +45,7 @@
         }
       }
     }
-    q.add(actionWrapper, a.delay)
+    q.add(wrapAction, a.delay)
   }
   // run a shortlet aka. queue its actions and exec the queue
   function runShortlet(s) {
@@ -110,6 +100,7 @@
     els.forEach((el, index) => {
       el.setAttribute('data-shortlets_viewport', els_viewport[index])
     })
+    if (dev_mode) console.log('Shortlet: Data attributes updated', els)
   }
   //
   function observeInViewPort(el) {
