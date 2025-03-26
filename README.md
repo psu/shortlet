@@ -14,7 +14,7 @@ Shortlet is a framework to configure and launch small hacks for the web. Ease yo
 - Multiple actions with one click
 - Webpage manipulation without coding
 
-Shortlet comes as a Chrome/[Firefox](https://addons.mozilla.org/en-US/firefox/addon/shortlet) extension, providing automatic webpage injection, a command palette and a settings UI.
+Shortlet comes as a [Chrome](https://chromewebstore.google.com/detail/shortlet-tinker-with-webs/mcgeeginnkfnlheihekeklgmpfdliogn) and [Firefox](https://addons.mozilla.org/en-US/firefox/addon/shortlet) extension, providing automatic webpage injection, a command palette and a settings UI.
 
 ## Contents
 
