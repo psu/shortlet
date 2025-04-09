@@ -47,7 +47,7 @@ Shortlet comes as a [Chrome](https://chromewebstore.google.com/detail/shortlet-t
 3. Add your first shortlet and save the settings.
 4. Navigate to, or reload, the webpage and launch the shortlet.
 
----
+<p align="center">- **❧** -</>
 
 <br>
 
