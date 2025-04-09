@@ -155,12 +155,16 @@ A shortlet activating a delete dialog and click confirm, repeated 5 times.
 
 ## Details
 
+### Shortlet
 A _shortlet_ is a custom command. You configure it to perform the hack you desire. Each shortlet contains one or more actions, conditions and other properties. Shortlets are run from the command palette aka. the launcher.
 
+### Action
 An _action_ is a predefined piece of code that is performed when you run the shortlet. It has a set of defined input values. There are different types of actions, most of them does something with the DOM.
 
+### Conditions
 _Conditions_ decide if a shortlet should be available for a certain webpage. Currently, only URL conditions are supported.
 
+### More properties
 Other shortlet properties are _id_, _title_, _shortcut_, and _repeat_.
 
 <p align="center">- ❧ -</>
