@@ -47,7 +47,7 @@ Shortlet comes as a [Chrome](https://chromewebstore.google.com/detail/shortlet-t
 3. Add your first shortlet and save the settings.
 4. Navigate to, or reload, the webpage and launch the shortlet.
 
-<p align="center">- **❧** -</>
+<p align="center">- ❧ -</>
 
 <br>
 
@@ -149,7 +149,7 @@ A shortlet activating a delete dialog and click confirm, repeated 5 times.
 }
 ```
 
----
+<p align="center">- ❧ -</>
 
 <br>
 
@@ -163,7 +163,7 @@ _Conditions_ decide if a shortlet should be available for a certain webpage. Cur
 
 Other shortlet properties are _id_, _title_, _shortcut_, and _repeat_.
 
----
+<p align="center">- ❧ -</>
 
 <br>
 
@@ -190,7 +190,7 @@ Each action is written as a JSON object with the following key-value pairs:
 
 See each action below.
 
----
+<p align="center">- ❧ -</>
 
 <br>
 
@@ -269,7 +269,7 @@ Most actions require one or several elements to be selected, see _Element select
 | **log**       | Print selected elements in console.log. | <ul><li>`on/text/if/for`</li></ul> |
 | **highlight** | Not yet implemented.                    |                                    |
 
----
+<p align="center">- ❧ -</>
 
 <br>
 
@@ -293,7 +293,7 @@ The JSON object where you define your shortlets.
 
 Not yet implemented.
 
----
+<p align="center">- ❧ -</>
 
 <br>
 
@@ -323,7 +323,7 @@ The extension backend, handling local storage and open the settings page.
 
 Provide the extension settings page with HTML/CSS and code to access the persistant storage of the settings.
 
----
+<p align="center">- ❧ -</>
 
 <br>
 
