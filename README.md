@@ -16,7 +16,7 @@ Shortlet is a framework to configure and launch small hacks for the web. Ease yo
 
 Shortlet comes as a [Chrome](https://chromewebstore.google.com/detail/shortlet-tinker-with-webs/mcgeeginnkfnlheihekeklgmpfdliogn) and [Firefox](https://addons.mozilla.org/en-US/firefox/addon/shortlet) extension, providing automatic webpage injection, a command palette and a settings UI.
 
-## Contents
+**Contents**
 
 - [Usage](#usage)
 - [Examples](#examples)
@@ -38,6 +38,8 @@ Shortlet comes as a [Chrome](https://chromewebstore.google.com/detail/shortlet-t
 
 ---
 
+<br>
+
 ## Usage
 
 1. Install from [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/shortlet) or download and load the folder _src_ as an unpacked extension in Chrome.
@@ -46,6 +48,8 @@ Shortlet comes as a [Chrome](https://chromewebstore.google.com/detail/shortlet-t
 4. Navigate to, or reload, the webpage and launch the shortlet.
 
 ---
+
+<br>
 
 ## Examples
 
@@ -147,6 +151,8 @@ A shortlet activating a delete dialog and click confirm, repeated 5 times.
 
 ---
 
+<br>
+
 ## Details
 
 A _shortlet_ is a custom command. You configure it to perform the hack you desire. Each shortlet contains one or more actions, conditions and other properties. Shortlets are run from the command palette aka. the launcher.
@@ -158,6 +164,8 @@ _Conditions_ decide if a shortlet should be available for a certain webpage. Cur
 Other shortlet properties are _id_, _title_, _shortcut_, and _repeat_.
 
 ---
+
+<br>
 
 ## Actions overview
 
@@ -183,6 +191,8 @@ Each action is written as a JSON object with the following key-value pairs:
 See each action below.
 
 ---
+
+<br>
 
 ## List of Actions
 
@@ -261,6 +271,8 @@ Most actions require one or several elements to be selected, see _Element select
 
 ---
 
+<br>
+
 ## Settings
 
 ### Command palette shortcut
@@ -282,6 +294,8 @@ The JSON object where you define your shortlets.
 Not yet implemented.
 
 ---
+
+<br>
 
 ## Code building-blocks
 
@@ -310,6 +324,8 @@ The extension backend, handling local storage and open the settings page.
 Provide the extension settings page with HTML/CSS and code to access the persistant storage of the settings.
 
 ---
+
+<br>
 
 ## You scrolled all the way down!
 
