@@ -321,6 +321,8 @@ Nothing exists in vaccum. Shortlet is built from ideas I got when using the bril
 
 Queues are cool, use natural language, have fun.
 
+<br>
+
 ---
 
-Pontus Sundén, 2025
+Pontus Sundén, 2025 - [hi@pontus.cc](mailto:hi@pontus.cc)
