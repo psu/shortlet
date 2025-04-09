@@ -36,7 +36,7 @@ Shortlet comes as a [Chrome](https://chromewebstore.google.com/detail/shortlet-t
 - [Settings](#settings)
 - [Code building-blocks](#code-building-blocks)
 
-<p style="text-align:center">❧</>
+<p align="center">- ❧ -</>
 
 <br>
 
