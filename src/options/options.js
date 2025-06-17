@@ -32,3 +32,45 @@ const restoreOptions = () => {
 
 document.addEventListener('DOMContentLoaded', restoreOptions)
 document.getElementById('save').addEventListener('click', saveOptions)
+window.addEventListener('keydown', e => {
+  if (e.metaKey && e.key === 's') {
+    e.preventDefault()
+    saveOptions()
+  }
+})
+
+////////////////////////////////////////
+
+const mod_active_keys = new Set()
+let mod_reset_timeout_id = undefined
+const mod_reset_time = 5000
+const mod_tracked_keys = new Set(['Shift', 'Control', 'Alt', 'Meta'])
+
+const mod_reset = () => {
+  console.log('reset', mod_active_keys)
+  mod_active_keys.clear()
+  clearTimeout(mod_reset_timeout_id)
+}
+const mod_trigger = () => {
+  console.log('trigger', mod_active_keys)
+}
+
+window.addEventListener('keydown', event => {
+  // if key is not a modifier key, reset the active keys
+  if (!mod_tracked_keys.has(event.key)) {
+    mod_reset()
+    return
+  }
+  if (!mod_active_keys.has(event.key)) mod_active_keys.add(event.key)
+  if (mod_active_keys.size > 0) mod_trigger()
+  // if no keyup event is fired within some time, reset anyway
+  if (mod_reset_timeout_id) clearTimeout(mod_reset_timeout_id)
+  mod_reset_timeout_id = setTimeout(mod_reset, mod_reset_time)
+})
+
+window.addEventListener('keyup', event => {
+  if (mod_active_keys.has(event.key)) {
+    mod_active_keys.delete(event.key)
+    if (mod_active_keys.size === 0) mod_reset()
+  }
+})

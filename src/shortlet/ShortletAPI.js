@@ -63,12 +63,12 @@ const ShortletAPI = (() => {
     }
     elem.dispatchEvent(ev)
   }
-  function ispatchKeyboardEvent(elem, event = 'keydown', key = 'Space', options = { bubbles: true, cancelable: true, view: window }) {
+  function dispatchKeyboardEvent(elem, event = 'keydown', key = 'Space', options = { bubbles: true, cancelable: true, view: window }) {
     options.key = key
-    elem.ispatchEvent(new KeyboardEvent(event, options)) // options {metaKey: true} (shiftKey, ctrlKey, altKey)
+    elem.dispatchEvent(new KeyboardEvent(event, options)) // options {metaKey: true} (shiftKey, ctrlKey, altKey)
   }
-  function ispatchMouseEvent(elem, event = 'click', options = { bubbles: true, cancelable: true, view: window }) {
-    elem.ispatchEvent(new MouseEvent(event, options))
+  function dispatchMouseEvent(elem, event = 'click', options = { bubbles: true, cancelable: true, view: window }) {
+    elem.dispatchEvent(new MouseEvent(event, options))
   }
   function setInputProperty(elem, attr, value) {
     Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, attr).set.call(elem, value)
@@ -139,7 +139,6 @@ const ShortletAPI = (() => {
         .map(e => e.innerText.trim())
         .join(o.delimiter || '\n')
     )
-
   _.show = o =>
     el(o).forEach(e => {
       e.style.display = o.as || 'block'
