@@ -23,25 +23,25 @@
   function queueAction(q, a) {
     // logging templates
     const logSuccess = action => {
-      if (dev_mode) console.log(`Shortlet "${action.do}" ✔️`, action)
+      console.log(`Shortlet "${action.do}" ✔️`, action)
     }
     const logError = (err = '', action = '', obj = {}) => {
-      if (dev_mode) console.log(`Shortlet "${action} 🚫": ${err}`, obj)
+      console.log(`Shortlet "${action} 🚫": ${err}`, obj)
     }
     const wrapAction = () => {
       try {
         ShortletAPI[a.do](a)
-        logSuccess(a)
+        if (dev_mode) logSuccess(a)
       } catch (err) {
         if (typeof a.fallback === 'object') {
           try {
             ShortletAPI[a.do](a.fallback)
-            logSuccess({ do: `${a.do}:fallback`, ...a.fallback })
+            if (dev_mode) logSuccess({ do: `${a.do}:fallback`, ...a.fallback })
           } catch (err) {
-            logError(err, `${a.do}:fallback`, a)
+            if (dev_mode) logError(err, `${a.do}:fallback`, a)
           }
         } else {
-          logError(err, a.do, a)
+          if (dev_mode) logError(err, a.do, a)
         }
       }
     }
@@ -116,6 +116,18 @@
       }, 10)
     })
   }
+  // function observeMutations() {
+  //   new MutationObserver((mutationList, observer) => {
+  //     for (const mutation of mutationList) {
+  //       if (mutation.type === 'childList') {
+  //         console.log('A child node has been added or removed.')
+  //       } else if (mutation.type === 'attributes') {
+  //         console.log(`The ${mutation.attributeName} attribute was modified.`)
+  //       }
+  //     }
+  //   }).observe(document.body, { attributes: true, childList: true, subtree: true })
+  // }
+  // observeMutations()
   // shortlets as commands
   const page_shortlets = getShortlets()
   const commands = parseShortletsForCommandPal(page_shortlets)
@@ -196,10 +208,12 @@
     shortcutOpenPalette: false,
     id: 'shortlet-command-pal',
   })
-  cmd.subscribe('exec', () => {
+  // not so useful since it runs after the command is executed
+  cmd.subscribe('beforeExec', () => {
     updateShortletDataAttributes(page_shortlets)
   })
   cmd.start()
+
   if (dev_mode)
     console.log(
       ` _______      __                    _ __  __     _      __    __       _ __\n/_  __(_)__  / /_____ ____  _    __(_) /_/ /    | | /| / /__ / /  ___ (_) /____ ___\n / / / / _ \\/  \\_/ -_) __/ | |/|/ / / __/ _ \\   | |/ |/ / -_) _ \\(_-</ / __/ -_|_-<\n/_/ /_/_//_/_/\\_\\\\__/_/    |__,__/_/\\__/_//_/   |__/|__/\\__/_.__/___/_/\\__/\\__/___/`
