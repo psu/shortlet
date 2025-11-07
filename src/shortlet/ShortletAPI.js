@@ -4,23 +4,23 @@ const ShortletAPI = (() => {
   // select the elements matching the selector o.on
   // filter by the regex o.text and by o.if: "view" (inViewport) and "front" (isFrontmost)
   function el(o) {
+    let elms = []
     // mandatory
     if (typeof o.on !== 'string') return []
     // defaults
     if (typeof o.on !== 'string') o.on = undefined
     if (typeof o.if !== 'string') o.if = ''
     if (typeof o.for !== 'string') o.for = 'first'
-    try {
-      // select and filter elements
-      let elms = Array.from(document.querySelectorAll(o.on))
-      if (o.text) elms = elms.filter(e => matchInnerText(e, o.text))
-      if (o.if.match(/view/i) !== null) elms = elms.filter(e => inViewport(e))
-      if (o.if.match(/front/i) !== null) elms = elms.filter(e => isFrontmost(e))
-      if (o.for === 'random') return elms.slice((r = rand(1, elms.length)), r - 1)
-      elms = elms.slice(slice_map[o.for].start, slice_map[o.for].end)
-      if (elms.length === 0) throw new Error(`No elements matching selector "${o.on}"`)
-      return elms
-    } catch (err) {}
+    // select and filter elements
+    elms = Array.from(document.querySelectorAll(o.on))
+    if (o.text) elms = elms.filter(e => matchInnerText(e, o.text))
+    if (o.if.match(/view/i) !== null) elms = elms.filter(e => inViewport(e))
+    if (o.if.match(/front/i) !== null) elms = elms.filter(e => isFrontmost(e))
+    if (o.for === 'random') return elms.slice((r = rand(1, elms.length)), r - 1)
+    elms = elms.slice(slice_map[o.for].start, slice_map[o.for].end)
+    if (elms.length === 0) throw new Error(`No elements matching selector "${o.on}"`)
+    if (Shortlet.dev) console.log(`ShortletAPI el:${elms.length} ✔️`, elms)
+    return elms
   }
   // helpers to filter elements
   function matchInnerText(elem, text) {

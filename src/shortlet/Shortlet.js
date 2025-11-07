@@ -19,6 +19,9 @@
       })
     })
   }
+  const preActions = async action => {
+    await updateElementsViewport([...document.querySelectorAll(action.on)].flat())
+  }
   // helper to wrap and queue a single action
   function queueAction(q, a) {
     // logging templates
@@ -29,21 +32,23 @@
       console.log(`Shortlet "${action} 🚫": ${err}`, obj)
     }
     const wrapAction = () => {
-      try {
-        ShortletAPI[a.do](a)
-        if (dev_mode) logSuccess(a)
-      } catch (err) {
-        if (typeof a.fallback === 'object') {
-          try {
-            ShortletAPI[a.do](a.fallback)
-            if (dev_mode) logSuccess({ do: `${a.do}:fallback`, ...a.fallback })
-          } catch (err) {
-            if (dev_mode) logError(err, `${a.do}:fallback`, a)
+      preActions(a).then(() => {
+        try {
+          ShortletAPI[a.do](a)
+          if (dev_mode) logSuccess(a)
+        } catch (err) {
+          if (typeof a.fallback === 'object') {
+            try {
+              ShortletAPI[a.do](a.fallback)
+              if (dev_mode) logSuccess({ do: `${a.do}:fallback`, ...a.fallback })
+            } catch (err) {
+              if (dev_mode) logError(err, `${a.do}:fallback`, a)
+            }
+          } else {
+            if (dev_mode) logError(err, a.do, a)
           }
-        } else {
-          if (dev_mode) logError(err, a.do, a)
         }
-      }
+      })
     }
     q.add(wrapAction, a.delay)
   }
@@ -71,36 +76,41 @@
         name: s.title,
         //        description: s.description || `Executes ${s.actions.length} actions`,
         shortcut: s.shortcut,
-        handler: () => {
+        handler: async () => {
           runShortlet(s)
         },
       }))
   }
   //
-  function extractActionsFromShortlets(shlts) {
-    return shlts
-      .filter(s => s.actions)
-      .map(s => s.actions)
-      .flat()
-  }
+  // function extractActionsFromShortlets(shlts) {
+  //   return shlts
+  //     .filter(s => s.actions)
+  //     .map(s => s.actions)
+  //     .flat()
+  // }
+  // //
+  // function extractFallbacksFromActions(actions) {
+  //   return actions
+  //     .filter(a => a.fallback)
+  //     .map(a => a.fallback)
+  //     .flat()
+  // }
+  // //
+  // function updateShortletDataAttributes(shlts) {
+  //   if (!Array.isArray(shlts)) shlts = [shlts]
+  //   let actions = extractActionsFromShortlets(shlts)
+  //   actions = [...actions, ...extractFallbacksFromActions(actions)].filter(a => a && typeof a.if === 'string' && a.if.match(/view/i) !== null).flat()
+  //   updateActionsDataAttributes(actions)
+  // }
   //
-  function extractFallbacksFromActions(actions) {
-    return actions
-      .filter(a => a.fallback)
-      .map(a => a.fallback)
-      .flat()
-  }
-  //
-  async function updateShortletDataAttributes(shlts) {
-    let actions = extractActionsFromShortlets(shlts)
-    actions = [...actions, ...extractFallbacksFromActions(actions)].filter(a => a && typeof a.if === 'string' && a.if.match(/view/i) !== null).flat()
-    const els = [...actions.map(a => [...document.querySelectorAll(a.on)])].flat()
+  async function updateElementsViewport(els) {
+    if (!Array.isArray(els)) els = [els]
     // filter doesn't work with promises so two steps are needed https://stackoverflow.com/questions/47095019/how-to-use-array-prototype-filter-with-async
     const els_viewport = await Promise.all(els.map(observeInViewPort))
     els.forEach((el, index) => {
       el.setAttribute('data-shortlets_viewport', els_viewport[index])
     })
-    if (dev_mode) console.log('Shortlet: Data attributes updated', els)
+    //if (dev_mode) console.log('Shortlet Viewport updated', els)
   }
   //
   function observeInViewPort(el) {
@@ -208,10 +218,6 @@
     shortcutOpenPalette: false,
     id: 'shortlet-command-pal',
   })
-  // not so useful since it runs after the command is executed
-  cmd.subscribe('beforeExec', () => {
-    updateShortletDataAttributes(page_shortlets)
-  })
   cmd.start()
 
   if (dev_mode)
@@ -223,6 +229,7 @@
       if (typeof actions === 'string') actions = shortlets_list.filter(s => s.id == actions)[0].actions
       runShortlet({ actions })
     },
+    dev: dev_mode,
   }
 })().then(expo => {
   window.Shortlet = expo
