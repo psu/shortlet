@@ -30,3 +30,5 @@ class MiniQueue {
     delete this.timer
   }
 }
+
+if (typeof module !== 'undefined') module.exports = { MiniQueue }

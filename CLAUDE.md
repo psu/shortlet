@@ -82,6 +82,21 @@ src/
 - `value` — action-specific value (e.g. text to input)
 - `fallback` — array of actions to run if this action fails
 
-## No Tests
+## Tests
 
-There is no automated test suite. Verify changes by loading the extension and exercising it manually in a browser.
+Unit tests cover pure logic that doesn't require a browser: `MiniQueue` and the element-filter helpers (`matchInnerText`, `textMatchJoin`, `slice_map`). They use Node's built-in test runner — no npm install required.
+
+```
+node --test tests/*.test.js
+```
+
+| File | What it covers |
+|---|---|
+| `tests/miniqueue.test.js` | `MiniQueue` constructor, `add`, `start`, `pause` |
+| `tests/helpers.test.js` | `matchInnerText`, `textMatchJoin`, `slice_map` |
+
+**How exports work without a bundler:** `MiniQueue.js` and `ShortletAPI.js` contain a `if (typeof module !== 'undefined') module.exports = ...` guard at the bottom. In the browser the guard is falsy (content scripts have no `module`), so it's a no-op. In Node it exports the symbols for testing.
+
+The pure helpers (`matchInnerText`, `textMatchJoin`, `slice_map`) live at the top of `ShortletAPI.js`, outside the IIFE, so they are accessible to both the IIFE and the test guard.
+
+DOM-dependent code (actions, element selection, event dispatch) is not unit-tested. Verify those changes manually by loading the extension in a browser.
