@@ -1,3 +1,25 @@
+// pure helpers — no DOM or browser API dependencies; exported for unit testing
+function matchInnerText(elem, text) {
+  const inner_text = elem.innerText.toLowerCase().trim()
+  return inner_text !== '' && inner_text.match(new RegExp(text.toLowerCase().trim())) !== null
+}
+function textMatchJoin(source, pattern, delimiter = '') {
+  const match = source.match(new RegExp(pattern || '.*'))
+  if (match === null) return ''
+  if (match.length === 1) return match[0]
+  return match.slice(1).join(delimiter)
+}
+const slice_map = {
+  first:     { start: 0,  end: 1  },
+  last:      { start: -1           },
+  each:      { start: 0            },
+  all:       { start: 0            },
+  but_last:  { start: 0,  end: -1 },
+  but_first: { start: 1            },
+}
+
+if (typeof module !== 'undefined') module.exports = { matchInnerText, textMatchJoin, slice_map }
+
 const ShortletAPI = (() => {
   // internal helper functions
   //
@@ -23,10 +45,6 @@ const ShortletAPI = (() => {
     return elms
   }
   // helpers to filter elements
-  function matchInnerText(elem, text) {
-    const inner_text = elem.innerText.toLowerCase().trim()
-    return inner_text !== '' && inner_text.match(new RegExp(text.toLowerCase().trim())) !== null
-  }
   function isFrontmost(elem) {
     try {
       const rect = elem.getBoundingClientRect()
@@ -39,14 +57,6 @@ const ShortletAPI = (() => {
     return e.dataset.shortlets_viewport === 'true'
   }
   // utils
-  const slice_map = {
-    first: { start: 0, end: 1 },
-    last: { start: -1 },
-    each: { start: 0 },
-    all: { start: 0 },
-    but_last: { start: 0, end: -1 },
-    but_first: { start: 1 },
-  }
   function rand(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min)
   }
@@ -93,12 +103,6 @@ const ShortletAPI = (() => {
     span.setAttribute('style', style)
     const out = elem.querySelector(target) || elem.parentElement.parentElement || elem.parentElement
     out.append(span)
-  }
-  function textMatchJoin(source, pattern, delimiter = '') {
-    const match = source.match(new RegExp(pattern || '.*'))
-    if (match === null) return ''
-    if (match.length === 1) return match[0]
-    return match.slice(1).join(delimiter)
   }
   // define the Shortlet API
   const _ = {}
